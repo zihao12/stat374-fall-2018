@@ -1,0 +1,81 @@
+---
+title: "hw1"
+author: "Zihao_Wang"
+date: "10/7/2018"
+output: html_document
+---
+
+```{r}
+set.seed(12345)
+```
+
+
+# 1. Computing and plotting with R
+
+## (a)
+```{r}
+## function to compute empirical mean square error 
+mse <- function(n,sigma){
+  mysample = rnorm(n = n, sd = sigma, mean = 1)
+  return((mean(mysample)-1)^2)
+}
+
+emse <- function(n,sigma,B){
+  return(mean(replicate(B,mse(n,sigma))))
+}
+
+## simulate and plot
+sigma = 1
+B = 100
+
+ns = seq(1,1000,5)
+results = replicate(length(ns),0)
+theory = replicate(length(ns),0)
+
+for(i in 1:length(ns)){
+  results[i] = emse(ns[i],sigma,B)
+  theory[i] = sigma^2/ns[i]
+}
+
+plot(log(ns), log(results), xlab = "n", ylab = "mse")
+lines(log(ns),log(theory), col = "red")
+```
+
+### Comment:
+From the simulation experiments, we can see the results align with theoretical results
+
+## (b)
+
+```{r}
+n = 1000
+sigma = 1
+B = 100
+
+## simulation
+Z = replicate(B,sqrt(n)*(mean(rnorm(n,1,sigma)) - 1))
+
+## theoretical standard normal
+ns = seq(-10,10,0.01)
+theory = replicate(length(ns),0)
+for(i in 1:length(ns)){
+  theory[i] = 1/sqrt(2*pi) * exp(-ns[i]^2 *0.5)
+}
+
+plot(density(Z,), col = "blue")
+lines(ns,theory,col = "red")
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
