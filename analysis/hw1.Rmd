@@ -6,7 +6,14 @@ output: html_document
 ---
 
 ```{r}
+rm(list=ls())
 set.seed(12345)
+options(warn = -1)
+knitr::opts_knit$set(root.dir = '~/Desktop/stat374-fall-2018/analysis/')
+library(kedd)
+library(locfit)
+library(gridExtra)
+library(reshape)
 ```
 
 
@@ -66,10 +73,364 @@ lines(ns,theory,col = "red")
 ```
 
 
+# 2 Leave-oue-out cross-validation
+
+## (a)
+By definition, $\hat{R}(h) = \frac{1}{n} * \sum_{i = 1}^{n} (r(x_{i})-\hat{r}_{-i}(x_{i}))^2$. 
+Then we have $r(x_{i}) - \hat{r}_{-i}(x_{i}) = Y_{i} - \frac{\sum_{k \neq i} L_{i,k} * Y_{k}}{1-L_{ii}} = \frac{Y_{i} - \hat{r}_{n}(x_{i})} {1-L  _{ii}}$. Then our desired equation follows.
+
+## (b)
+### See what the data looks like
+```{r}
+StochasticDoppler <- function(x,sigma=0.1){
+  y = sqrt(x*(1-x)) * sin(2.1*pi/(x+0.05)) + sigma * rnorm(1,0,1)
+  return(y)
+}
+
+Doppler <- function(x){
+  y = sqrt(x*(1-x)) * sin(2.1*pi/(x+0.05)) 
+  return(y)
+}
+
+N = 1000
+Xs = seq(1,N)/N
+ys <- sapply(Xs, StochasticDoppler)
+ys_true = sapply(Xs,Doppler)
+plot(Xs,ys)
+```
+
+### Plot Cross-validation-score (use GCV as approximate) vs bandwidth
+```{r}
+# # using package
+# gcvs = gcvplot(ys~Xs, alpha = seq(0,0.5,0.01))
+# plot(gcvs$alpha, gcvs$values)
+
+## handwritten
+
+## Gaussian kernel function
+K <- function(x){
+  return(1/sqrt(2*pi) * exp(-x^2/2))
+}
+h = 0.02
+
+### compute L (L_ij = l_j(x_i), rowSums(L) = 1,1...)
+n = length(Xs)
+X_matrix = replicate(n,Xs)
+X_difference_scaled = (X_matrix - t(X_matrix))/h 
+X_difference_scaled_kernel = K(X_difference_scaled) ## X_ij = K((Xi-Xj)/h)
+L = diag(1/rowSums(X_difference_scaled_kernel)) %*% X_difference_scaled_kernel 
+
+### Compute Lii
+L_diag = diag(L)
+
+### Compute ys_hat
+ys_hat = L %*% ys
+
+### Conmpute R_hat
+R_hat = mean(((ys-ys_hat)/(1-L_diag))^2)
+
+print(R_hat)
+
+```
+
+```{r include=FALSE}
+n = length(Xs)
+X_matrix = replicate(n,Xs)
+X_difference_scaled = (X_matrix - t(X_matrix))/h 
+X_difference_scaled_kernel = K(X_difference_scaled) ## X_ij = K((Xi-Xj)/h)
+L = diag(1/rowSums(X_difference_scaled_kernel)) %*% X_difference_scaled_kernel 
+
+### Compute Lii
+L_diag = diag(L)
+
+### Compute ys_hat
+ys_hat = L %*% ys
+
+### Conmpute R_hat
+R_hat = mean(((ys-ys_hat)/(1-L_diag))^2)
+```
+
+```{r}
+Rhat <- function(h,Xs){
+  ### compute L (L_ij = l_j(x_i), rowSums(L) = 1,1...)
+  n = length(Xs)
+  X_matrix = replicate(n,Xs)
+  X_difference_scaled = (X_matrix - t(X_matrix))/h 
+  X_difference_scaled_kernel = K(X_difference_scaled) ## X_ij = K((Xi-Xj)/h)
+  L = diag(1/rowSums(X_difference_scaled_kernel)) %*% X_difference_scaled_kernel 
+  
+  ### Compute Lii
+  L_diag = diag(L)
+  
+  ### Compute ys_hat
+  ys_hat = L %*% ys
+  
+  ### Conmpute R_hat
+  R_hat = mean(((ys-ys_hat)/(1-L_diag))^2)
+  
+  return(R_hat)
+}
+```
+
+
+```{r}
+hs = seq(0,0.05,0.001)
+myloocvs <- sapply(hs, function(h) Rhat(h,Xs)) 
+plot(myloocvs)
+```
+
+```{r}
+h_star = hs[which.min(myloocvs)]
+smoothed = locfit(ys~Xs,alpha = c(h_star))
+plot(smoothed, col = "red")
+lines(Xs,ys_true)
+```
+
+
+
+```{r}
+# using package
+gcvs = gcvplot(ys~Xs, alpha = seq(0,0.5,0.01))
+plot(gcvs$alpha, gcvs$values)
+
+```
+
+
+
+### Plot the local linear estimates using optimum bandwidth
+```{r}
+h_star = gcvs$alpha[which.min(gcvs$values)]
+smoothed = locfit(ys~Xs,alpha = c(h_star))
+plot(smoothed, col = "red")
+lines(Xs,ys_true)
+```
+
+## compute and plot the confidence interval for r(x)
+
+
+######### I assume that in the model noise $\epsilon$ follows  $N(0,\sigma^2)$ for some unknown $\sigma$ (first question, is it normal, second: constant variance)
+For fixed x,
+$$\hat{r}_{n}(x) = \sum_{i = 1}^{n} l_{i}(x) Y_{i} = \sum_{i = 1}^{n} l_{i}(x) (r(x_i) + \epsilon_{i})) = \sum_{i = 1}^{n} l_{i}(x)r(x_i) + \sum_{i = 1}^{n} l_{i}(x)\epsilon_{i}$$. It is obvious that $\hat{r}_{n}(x)$ follows normal distribution, with mean $r(x)$, variance $\sigma_^2 |l(x)|^2$. (both can be found in ANoS). However, since we need to estimate $\sigma$ with data, using the formula:
+
+$$\hat{\sigma}(x)^{2} =  \frac{\sum_{i = 1}^{n} (Y_i - \hat{r_n}(x_i))^2}{n-2\gamma + \hat{\gamma}};     \gamma = tr(L), \hat{\gamma} = tr(L^TL)   $$
+
+then the $I_{n}(x)$ in question is *not* the 95 percent pointwise confidence interval for $r(x)$, as we will need a F distribution, not a Z.
+
+
+Below I will plot the confidence interval $I_{n}(x)$ for $r(x)$.
+
+```{r}
+## assume sigma is constant
+n = length(Xs)
+gamma = as.numeric(smoothed$dp["df1"])
+gamma_hat = as.numeric(smoothed$dp["df2"])
+ys_smoothed = fitted(smoothed)
+sigma_hat = sum((ys-ys_smoothed)^2)/(n-2*gamma)
+
+## Gaussian kernel function
+K <- function(x){
+  return(1/sqrt(2*pi) * exp(-x^2/2))
+}
+
+## l(x) for each x
+L <- function(x,Xs,h){
+  l = sapply(Xs, function(xi) K((x-xi)/h))
+  return(l/sum(l))
+}
+
+L_norm <- function(x,Xs,h){
+  l = L(x,Xs,h)
+  return(sqrt(sum(l^2)))
+}
+
+
+In_UpperLower <- function(x,sm,Xs,h,sigma_hat,z=1.96){
+  ## sm is a locfit object
+  n = length(Xs)
+  ## rhat(x)
+  r_hat_x = predict(sm,x)
+  ## may also need to compute sigmahat(x) with some formula
+  
+  ## |l(x)|
+  l_x_norm = L_norm(x,Xs,h)
+  
+  upper = r_hat_x + z* sigma_hat * l_x_norm
+  lower = r_hat_x - z* sigma_hat * l_x_norm
+  return(c(upper,lower))
+}
+
+ups = replicate(length(Xs),0)
+los = replicate(length(Xs),0)
+for(i in 1:length(Xs)){
+  out = In_UpperLower(Xs[i],smoothed,Xs,h_star,sigma_hat)
+  ups[i] = out[1]
+  los[i] = out[2]
+}
+
+plot(smoothed, col = "red")
+lines(ups,col = "green")
+lines(los, col = "blue")
+
+summary(ys_smoothed)
+summary(ups - los)
+```
+### Comment:
+The upper and lower bounds are very close to each other. By comparing the summary of y_hat and the difference between upper and lower bound, we can see that the differences are too small.
 
 
 
 
+
+# 3. Kernel density estimate for Old Faithful Geyser
+```{r}
+data("faithful")
+attach(faithful)
+
+library(kedd)
+ucv_eruptions = h.ucv(eruptions,nb = 1000)
+plot(ucv_eruptions)
+
+ucv_waiting = h.ucv(waiting,nb = 1000)
+plot(ucv_waiting)
+```
+
+##  plot estimated density with optimum h
+```{r}
+plot(density(eruptions, bw = ucv_eruptions$h))
+plot(density(waiting, bw = ucv_waiting$h))
+
+```
+
+
+
+# 5  Capital Bike Sharing
+```{r}
+data = read.csv("../data/hw1/train.csv")
+test = read.csv("../data/hw1/test.csv")
+
+fac_names = c("holiday","workingday","weather")
+for(i in 1:length(fac_names)){
+  name = fac_names[i]
+  data[[name]] = as.factor(data[[name]])
+  test[[name]] = as.factor(test[[name]])
+}
+data[["transformed_count"]] = log(data$count + 1)
+
+## split train into train and validation
+train = data[data$day < 16,]
+val = data[data$day > 15,]
+```
+
+```{r}
+#plot(density(train$count))
+hist(train$count)
+```
+
+```{r}
+library(tidyverse)
+p1 = ggplot(train,aes(atemp, count, color = weather)) + 
+  geom_point()
+
+p2 = ggplot(train,aes(humidity,count,  color = weather)) + 
+  geom_point()
+
+p3 = ggplot(train,aes(windspeed,count,  color = weather)) + 
+  geom_point()
+
+grid.arrange(p1,p2,p3,nrow = 3)
+
+```
+### Comment:
+Findings:
+* on most of the days, there are no counts at all! The curve is like exponential. 
+* counts higher on good weather
+* counts are highest when atemp is at around 30; more negatively affected if atemp is too low than too hot
+* counts are higher when windspeed is low
+* counts seem not to be affacted by humidity too much, though extreme humiditity (likely raining reduce counts)
+
+
+## (a) linear model on count
+```{r}
+
+linearMD = lm(transformed_count~atemp+humidity+windspeed+weather, data=train)
+summary(linearMD)
+plot(linearMD)
+```
+
+```{r}
+linearPredict = predict(linearMD, subset(val, colnames = c("atemp","humidity","windspeed","weather")))
+
+RMSLE_log <- function(count_log,count_hat_log){
+  return(sqrt(mean((count_log-count_hat_log)^2)))
+}
+
+RMSLE_log(linearPredict,val$transformed_count)
+plot(val$transformed_count[1:100])
+lines(linearPredict,col = "blue")
+
+```
+
+### Comment:
+Our model for linear regression is: $Y = X*\beta + \epsilon$.
+The normality assumption holds, but the residue seems not to be independent of X. Also, the R-squared is only around 25%, meaning our model does not account for much variance in data. p-value suggests that we should reject the null hypothesis that the selected variables are not correlated with counts.
+
+
+## (b)
+First, summarize the data by mean hourly counts
+```{r warning=FALSE}
+varnames = dimnames(train)[[2]]
+ids = varnames[varnames != "transformed_count"]
+
+val_mlt = melt(val,id = ids)
+
+train_mlt = melt(train,id = ids)
+train_mlt$value = as.numeric(train_mlt$value)
+train_hourmean = cast(train_mlt,daylabel~variable,sum)
+train_hourmean$transformed_count = train_hourmean$transformed_count / 24
+
+attach(train_hourmean)
+plot(daylabel,transformed_count)
+```
+
+```{r warning=FALSE}
+attach(train_hourmean)
+
+train_hourmean_locfitmodel = locfit(transformed_count~daylabel)
+train_hourmean_locfit = predict(train_hourmean_locfitmodel,daylabel)
+
+plot(daylabel,train_hourmean_locfit)
+
+train_hourmean_fitted = train_hourmean
+train_hourmean_fitted$transformed_count = train_hourmean_locfit
+
+```
+
+```{r warning=FALSE}
+attach(train_mlt)
+u_daylabels = unique(train_mlt$daylabel)
+## subtract the smoothed hourly mean from the counts in original dataset
+for(i in 1:length(u_daylabels)){
+  train_mlt[train_mlt$daylabel == u_daylabels[i],"value"] =  train_mlt[train_mlt$daylabel == u_daylabels[i],"value"] - train_hourmean_fitted[train_hourmean_fitted$daylabel == u_daylabels[i],"transformed_count"]
+}
+
+SmoothedLinearMD = lm(value ~ atemp+humidity+windspeed+weather, data = train_mlt)
+SmoothedLinearPredict = as.numeric(predict(SmoothedLinearMD, subset(val_mlt, colnames = c("atemp","humidity","windspeed","weather"))))
+
+val_new_value = predict(train_hourmean_locfitmodel,val_mlt$daylabel) + SmoothedLinearPredict
+
+RMSLE_log(val_new_value, val_mlt$value)
+
+## show how the fit goes 
+plot(val_mlt$value[1:100])
+lines(val_new_value[1:100], col = "blue")
+lines(linearPredict,col = "red")
+```
+
+### Comment:
+There is some improvement in RMSLE (1.22 to 1.25, quite big considering it is on log scale)! But from a brief look at the first 100 fits, we cannot see its advantage over the linear model very well.
+
+
+## (c) Using additive model
 
 
 

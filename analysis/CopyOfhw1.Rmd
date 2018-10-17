@@ -1,0 +1,252 @@
+---
+title: "hw1"
+author: "Zihao_Wang"
+date: "10/7/2018"
+output: html_document
+---
+
+```{r}
+rm(list=ls())
+set.seed(12345)
+```
+
+
+# 1. Computing and plotting with R
+
+## (a)
+```{r}
+## function to compute empirical mean square error 
+mse <- function(n,sigma){
+  mysample = rnorm(n = n, sd = sigma, mean = 1)
+  return((mean(mysample)-1)^2)
+}
+
+emse <- function(n,sigma,B){
+  return(mean(replicate(B,mse(n,sigma))))
+}
+
+## simulate and plot
+sigma = 1
+B = 100
+
+ns = seq(1,1000,5)
+results = replicate(length(ns),0)
+theory = replicate(length(ns),0)
+
+for(i in 1:length(ns)){
+  results[i] = emse(ns[i],sigma,B)
+  theory[i] = sigma^2/ns[i]
+}
+
+plot(log(ns), log(results), xlab = "n", ylab = "mse")
+lines(log(ns),log(theory), col = "red")
+```
+
+### Comment:
+From the simulation experiments, we can see the results align with theoretical results
+
+## (b)
+
+```{r}
+n = 1000
+sigma = 1
+B = 100
+
+## simulation
+Z = replicate(B,sqrt(n)*(mean(rnorm(n,1,sigma)) - 1))
+
+## theoretical standard normal
+ns = seq(-10,10,0.01)
+theory = replicate(length(ns),0)
+for(i in 1:length(ns)){
+  theory[i] = 1/sqrt(2*pi) * exp(-ns[i]^2 *0.5)
+}
+
+plot(density(Z,), col = "blue")
+lines(ns,theory,col = "red")
+```
+
+
+# 2 Leave-oue-out cross-validation
+
+## (a)
+By definition, $\hat{R}(h) = \frac{1}{n} * \sum_{i = 1}^{n} (r(x_{i})-\hat{r}_{-i}(x_{i}))^2$. 
+Then we have $r(x_{i}) - \hat{r}_{-i}(x_{i}) = Y_{i} - \frac{\sum_{k \neq i} L_{i,k} * Y_{k}}{1-L_{ii}} = \frac{Y_{i} - \hat{r}_{n}(x_{i})} {1-L  _{ii}}$. Then our desired equation follows.
+
+## (b)
+```{r}
+StochasticDoppler <- function(x,sigma=0.1){
+  y = sqrt(x*(1-x)) * sin(2.1*pi/(x+0.05)) + sigma * rnorm(1,0,1)
+  return(y)
+}
+
+Doppler <- function(x){
+  y = sqrt(x*(1-x)) * sin(2.1*pi/(x+0.05)) 
+  return(y)
+}
+
+N = 1000
+Xs = seq(1,N)/N
+ys <- sapply(Xs, StochasticDoppler)
+ys_true = sapply(Xs,Doppler)
+plot(Xs,ys)
+
+```
+
+
+```{r}
+## Gaussian kernel function
+K <- function(x){
+  return(1/sqrt(2*pi) * exp(-x^2/2))
+}
+
+# L_ii = K(0)/SUM(K((Xi-Xj)/h))
+L_ii <- function(x,Xs,h){
+  Lii = K(0)/sum(sapply(Xs, function(Xj) K((Xj-x)/h)))
+  return(Lii)
+}
+
+
+degree_freedom <- function(Xs,h){
+  ys_hat = ksmooth(Xs,ys,kernel = "normal", bandwidth = h)$y
+  Liis = sapply(Xs,function(Xi) L_ii(Xi,Xs,h))
+  return(sum(Liis))
+}
+
+LOOCV <- function(Xs,ys,ys_hat,h){
+  n = length(Xs)
+  NUMERATOR = ys - ys_hat
+  DENOMINATOR = 1- sapply(Xs,function(Xi) L_ii(Xi,Xs,h))
+  R_hat = 1/n * sum((NUMERATOR/DENOMINATOR)^2)
+  return(R_hat)
+}
+
+SmoothLOOCV <- function(Xs,ys,h){
+  ys_hat = ksmooth(Xs,ys,kernel = "normal", bandwidth = h)$y
+  return(LOOCV(Xs,ys,ys_hat,h))
+}
+
+
+# hs = seq(1,10,1)/1000
+# loocv = sapply(hs, function(h) SmoothLOOCV(Xs,ys,h))
+# plot(hs,loocv)
+
+# dfs = sapply(hs,function(h) degree_freedom(Xs,h))
+# plot(loocv,dfs)
+
+
+
+
+
+```
+
+```{r}
+y_hat = ksmooth(Xs,ys,kernel = "normal", bandwidth  = 0.005)$y
+plot(Xs,ys_true, type = "l", col = "red")
+lines(Xs,y_hat,type = "l", col = "blue")
+
+```
+
+
+# 3. Kernel density estimate for Old Faithful Geyser
+```{r}
+data("faithful")
+plot(density(faithful$eruptions))
+plot(density(faithful$waiting))
+```
+
+
+$\hat{J}_{n}(h) = \int \hat{f}_{n}(x) dx - 2/n * \sum_{i = 1}^{n} \hat{f}_{n}^{(-i)} (x_{i})$, if we call the second half 2* mean_pdf,
+ then mean_pdf can be written as: $\frac{1}{n(n-1)h} \sum_{i} \sum_{j \neq i} K(\frac{x_i - x_j}{h} )$
+```{r}
+## f_hat uses Gaussian kernel to estimate pdf, given
+### Xs: a vector of all observations and h: the bandwidth
+f_hat <- function(x, Xs,h){
+  n = length(Xs)
+  scaled_Xs = sapply(Xs, function(xi) (xi-x)/h)
+  p = 1/n* 1/h * sum(sapply(scaled_Xs,K))
+  return(p)
+}
+
+
+## LOOCV computes loocv using the formula above
+LOOCV <- function(Xs,h){
+  ## compute integral
+  f_hat_sqr = function(x) f_hat(x,Xs,h)^2
+  integral = integrate(Vectorize(f_hat_sqr),0,10,subdivisions = 500)$value
+  ## comnpute the mean pdf for 
+  n = length(Xs)
+  X_matrix = t(replicate(n,Xs))
+  ## for ith row of X_matrix, subtract X_i
+  X_matrix_scaled  = (X_matrix - t(X_matrix)) / h
+  X_matrix_kernel = structure(sapply(X_matrix_scaled,K), dim = dim(X_matrix_scaled))
+  mean_pdf = 1/(n*(n-1)*h) * sum(X_matrix_kernel) - sum(diag(X_matrix_kernel))
+  
+  return(integral - 2*mean_pdf)
+}
+
+
+# ## for eruptions
+# hs0 = seq(1,10,1)/10000
+# loocvs0 = sapply(hs0, function(h) LOOCV(faithful$eruptions,h))
+# 
+# hs = seq(1,10,1)/1000
+# loocvs = sapply(hs, function(h) LOOCV(faithful$eruptions,h))
+# 
+# hs2 = seq(1,10,1)/100
+# loocvs2 = sapply(hs2, function(h) LOOCV(faithful$eruptions,h))
+# 
+# hs3 = seq(1,10,1)/10
+# loocvs3 = sapply(hs3, function(h) LOOCV(faithful$eruptions,h))
+# 
+# hss = c(hs0,hs,hs2,hs3)
+# loocvss = c(loocvs0,loocvs,loocvs2,loocvs3)
+# plot(hss, loocvss)
+# # xs = seq(0,10,0.1)
+# # plot(xs,sapply(xs, function(x) f_hat(x,faithful$eruptions,0.05)), type = "l")
+# 
+# ## for eruptions loocv seems to be problematic: increasing with h; drop to negative when h < 1e-05
+# 
+# ## for waiting time
+# loocvs_waiting0 = sapply(hs0, function(h) LOOCV(faithful$waiting,h))
+# plot(hs0,loocvs_waiting0)
+# 
+# loocvs_waiting = sapply(hs, function(h) LOOCV(faithful$waiting,h))
+# 
+# loocvs_waiting2 = sapply(hs2, function(h) LOOCV(faithful$waiting,h))
+# 
+# loocvs_waiting3 = sapply(hs3, function(h) LOOCV(faithful$waiting,h))
+# plot(hss, c(loocvs_waiting,loocvs_waiting0,loocvs_waiting2,loocvs_waiting3))
+
+```
+
+##  plot estimated density with optimum h
+```{r}
+h_star_eruption = 0.3
+xs = seq(0,10,0.1)
+plot(xs,sapply(xs, function(x) f_hat(x,faithful$eruptions,h_star_eruption)), type = "l")
+
+h_star_waiting = 1.5
+plot(xs,sapply(xs, function(x) f_hat(x,faithful$waiting,h_star_waiting)), type = "l")
+```
+
+
+```{r}
+library(kedd)
+ucv_eruptions = h.ucv(faithful$eruptions,nb = 1000)
+plot(ucv_eruptions)
+
+plot(xs,sapply(xs, function(x) f_hat(x,faithful$eruptions,ucv_eruptions$h)), type = "l")
+```
+
+```{r}
+ucv_waiting = h.ucv(faithful$waiting,nb = 1000)
+plot(ucv_waiting)
+
+plot(xs,sapply(xs, function(x) f_hat(x,faithful$waiting,ucv_eruptions$h)), type = "l")
+```
+
+
+
+
+

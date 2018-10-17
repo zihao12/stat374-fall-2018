@@ -317,11 +317,11 @@ div.section {
 </div>
 
 
-<p><strong>Last updated:</strong> 2018-10-07</p>
+<p><strong>Last updated:</strong> 2018-10-16</p>
 <strong>workflowr checks:</strong> <small>(Click a bullet for more information)</small>
 <ul>
 <li>
-<p><details> <summary> <strong style="color:red;">✖</strong> <strong>R Markdown file:</strong> uncommitted changes </summary> The R Markdown is untracked by Git. To know which version of the R Markdown file created these results, you’ll want to first commit it to the Git repo. If you’re still working on the analysis, you can ignore this warning. When you’re finished, you can run <code>wflow_publish</code> to commit the R Markdown file and build the HTML.</p>
+<p><details> <summary> <strong style="color:red;">✖</strong> <strong>R Markdown file:</strong> uncommitted changes </summary> The R Markdown file has unstaged changes. To know which version of the R Markdown file created these results, you’ll want to first commit it to the Git repo. If you’re still working on the analysis, you can ignore this warning. When you’re finished, you can run <code>wflow_publish</code> to commit the R Markdown file and build the HTML.</p>
 </details>
 </li>
 <li>
@@ -340,20 +340,94 @@ div.section {
 </details>
 </li>
 <li>
-<p><details> <summary> <strong style="color:blue;">✔</strong> <strong>Repository version:</strong> <a href="https://github.com/zihao12/stat374-fall-2018/tree/d1f6858d7f88cee79a7c3197b2e05c3a28f52127" target="_blank">d1f6858</a> </summary></p>
+<p><details> <summary> <strong style="color:blue;">✔</strong> <strong>Repository version:</strong> <a href="https://github.com/zihao12/stat374-fall-2018/tree/4f3ddee4161042d248bc0a7b86d376fb47a29c58" target="_blank">4f3ddee</a> </summary></p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility. The version displayed above was the version of the Git repository at the time these results were generated. <br><br> Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
 <pre><code>
+Ignored files:
+    Ignored:    .DS_Store
+
 Untracked files:
-    Untracked:  analysis/hw1.Rmd
-    Untracked:  assignment/
-    Untracked:  data/hw1/
+    Untracked:  analysis/CopyOfhw1.Rmd
+    Untracked:  assignment/syllabus.pdf
+
+Unstaged changes:
+    Modified:   analysis/hw1.Rmd
 
 </code></pre>
 Note that any generated files, e.g. HTML, png, CSS, etc., are not included in this status report because it is ok for generated content to have uncommitted changes. </details>
 </li>
 </ul>
+<details> <summary> <small><strong>Expand here to see past versions:</strong></small> </summary>
+<ul>
+<table style="border-collapse:separate; border-spacing:5px;">
+<thead>
+<tr>
+<th style="text-align:left;">
+File
+</th>
+<th style="text-align:left;">
+Version
+</th>
+<th style="text-align:left;">
+Author
+</th>
+<th style="text-align:left;">
+Date
+</th>
+<th style="text-align:left;">
+Message
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Rmd
+</td>
+<td style="text-align:left;">
+<a href="https://github.com/zihao12/stat374-fall-2018/blob/4f3ddee4161042d248bc0a7b86d376fb47a29c58/analysis/hw1.Rmd" target="_blank">4f3ddee</a>
+</td>
+<td style="text-align:left;">
+zihao12
+</td>
+<td style="text-align:left;">
+2018-10-08
+</td>
+<td style="text-align:left;">
+hw1-p1
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+html
+</td>
+<td style="text-align:left;">
+<a href="https://cdn.rawgit.com/zihao12/stat374-fall-2018/4f3ddee4161042d248bc0a7b86d376fb47a29c58/docs/hw1.html" target="_blank">4f3ddee</a>
+</td>
+<td style="text-align:left;">
+zihao12
+</td>
+<td style="text-align:left;">
+2018-10-08
+</td>
+<td style="text-align:left;">
+hw1-p1
+</td>
+</tr>
+</tbody>
+</table>
+</ul>
+<p></details></p>
 <hr />
-<pre class="r"><code>set.seed(12345)</code></pre>
+<pre class="r"><code>rm(list=ls())
+set.seed(12345)
+options(warn = -1)
+knitr::opts_knit$set(root.dir = &#39;~/Desktop/stat374-fall-2018/analysis/&#39;)
+library(kedd)
+library(locfit)</code></pre>
+<pre><code>locfit 1.5-9.1   2013-03-22</code></pre>
+<pre class="r"><code>library(gridExtra)
+library(reshape)</code></pre>
 <div id="computing-and-plotting-with-r" class="section level1">
 <h1>1. Computing and plotting with R</h1>
 <div id="a" class="section level2">
@@ -384,6 +458,36 @@ for(i in 1:length(ns)){
 plot(log(ns), log(results), xlab = &quot;n&quot;, ylab = &quot;mse&quot;)
 lines(log(ns),log(theory), col = &quot;red&quot;)</code></pre>
 <p><img src="figure/hw1.Rmd/unnamed-chunk-2-1.png" width="672" style="display: block; margin: auto;" /></p>
+<details> <summary><em>Expand here to see past versions of unnamed-chunk-2-1.png:</em></summary>
+<table style="border-collapse:separate; border-spacing:5px;">
+<thead>
+<tr>
+<th style="text-align:left;">
+Version
+</th>
+<th style="text-align:left;">
+Author
+</th>
+<th style="text-align:left;">
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+<a href="https://github.com/zihao12/stat374-fall-2018/blob/4f3ddee4161042d248bc0a7b86d376fb47a29c58/docs/figure/hw1.Rmd/unnamed-chunk-2-1.png" target="_blank">4f3ddee</a>
+</td>
+<td style="text-align:left;">
+zihao12
+</td>
+<td style="text-align:left;">
+2018-10-08
+</td>
+</tr>
+</tbody>
+</table>
+<p></details></p>
 <div id="comment" class="section level3">
 <h3>Comment:</h3>
 <p>From the simulation experiments, we can see the results align with theoretical results</p>
@@ -408,6 +512,435 @@ for(i in 1:length(ns)){
 plot(density(Z,), col = &quot;blue&quot;)
 lines(ns,theory,col = &quot;red&quot;)</code></pre>
 <p><img src="figure/hw1.Rmd/unnamed-chunk-3-1.png" width="672" style="display: block; margin: auto;" /></p>
+<details> <summary><em>Expand here to see past versions of unnamed-chunk-3-1.png:</em></summary>
+<table style="border-collapse:separate; border-spacing:5px;">
+<thead>
+<tr>
+<th style="text-align:left;">
+Version
+</th>
+<th style="text-align:left;">
+Author
+</th>
+<th style="text-align:left;">
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+<a href="https://github.com/zihao12/stat374-fall-2018/blob/4f3ddee4161042d248bc0a7b86d376fb47a29c58/docs/figure/hw1.Rmd/unnamed-chunk-3-1.png" target="_blank">4f3ddee</a>
+</td>
+<td style="text-align:left;">
+zihao12
+</td>
+<td style="text-align:left;">
+2018-10-08
+</td>
+</tr>
+</tbody>
+</table>
+<p></details></p>
+</div>
+</div>
+<div id="leave-oue-out-cross-validation" class="section level1">
+<h1>2 Leave-oue-out cross-validation</h1>
+<div id="a-1" class="section level2">
+<h2>(a)</h2>
+<p>By definition, <span class="math inline">\(\hat{R}(h) = \frac{1}{n} * \sum_{i = 1}^{n} (r(x_{i})-\hat{r}_{-i}(x_{i}))^2\)</span>. Then we have <span class="math inline">\(r(x_{i}) - \hat{r}_{-i}(x_{i}) = Y_{i} - \frac{\sum_{k \neq i} L_{i,k} * Y_{k}}{1-L_{ii}} = \frac{Y_{i} - \hat{r}_{n}(x_{i})} {1-L _{ii}}\)</span>. Then our desired equation follows.</p>
+</div>
+<div id="b-1" class="section level2">
+<h2>(b)</h2>
+<div id="see-what-the-data-looks-like" class="section level3">
+<h3>See what the data looks like</h3>
+<pre class="r"><code>StochasticDoppler &lt;- function(x,sigma=0.1){
+  y = sqrt(x*(1-x)) * sin(2.1*pi/(x+0.05)) + sigma * rnorm(1,0,1)
+  return(y)
+}
+
+Doppler &lt;- function(x){
+  y = sqrt(x*(1-x)) * sin(2.1*pi/(x+0.05)) 
+  return(y)
+}
+
+N = 1000
+Xs = seq(1,N)/N
+ys &lt;- sapply(Xs, StochasticDoppler)
+ys_true = sapply(Xs,Doppler)
+plot(Xs,ys)</code></pre>
+<p><img src="figure/hw1.Rmd/unnamed-chunk-4-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="plot-cross-validation-score-use-gcv-as-approximate-vs-bandwidth" class="section level3">
+<h3>Plot Cross-validation-score (use GCV as approximate) vs bandwidth</h3>
+<pre class="r"><code># # using package
+# gcvs = gcvplot(ys~Xs, alpha = seq(0,0.5,0.01))
+# plot(gcvs$alpha, gcvs$values)
+
+## handwritten
+
+## Gaussian kernel function
+K &lt;- function(x){
+  return(1/sqrt(2*pi) * exp(-x^2/2))
+}
+h = 0.02
+
+### compute L (L_ij = l_j(x_i), rowSums(L) = 1,1...)
+n = length(Xs)
+X_matrix = replicate(n,Xs)
+X_difference_scaled = (X_matrix - t(X_matrix))/h 
+X_difference_scaled_kernel = K(X_difference_scaled) ## X_ij = K((Xi-Xj)/h)
+L = diag(1/rowSums(X_difference_scaled_kernel)) %*% X_difference_scaled_kernel 
+
+### Compute Lii
+L_diag = diag(L)
+
+### Compute ys_hat
+ys_hat = L %*% ys
+
+### Conmpute R_hat
+R_hat = mean(((ys-ys_hat)/(1-L_diag))^2)
+
+print(R_hat)</code></pre>
+<pre><code>[1] 0.02281866</code></pre>
+<pre class="r"><code>Rhat &lt;- function(h,Xs){
+  ### compute L (L_ij = l_j(x_i), rowSums(L) = 1,1...)
+  n = length(Xs)
+  X_matrix = replicate(n,Xs)
+  X_difference_scaled = (X_matrix - t(X_matrix))/h 
+  X_difference_scaled_kernel = K(X_difference_scaled) ## X_ij = K((Xi-Xj)/h)
+  L = diag(1/rowSums(X_difference_scaled_kernel)) %*% X_difference_scaled_kernel 
+  
+  ### Compute Lii
+  L_diag = diag(L)
+  
+  ### Compute ys_hat
+  ys_hat = L %*% ys
+  
+  ### Conmpute R_hat
+  R_hat = mean(((ys-ys_hat)/(1-L_diag))^2)
+  
+  return(R_hat)
+}</code></pre>
+<pre class="r"><code>hs = seq(0,0.05,0.001)
+myloocvs &lt;- sapply(hs, function(h) Rhat(h,Xs)) 
+plot(myloocvs)</code></pre>
+<p><img src="figure/hw1.Rmd/unnamed-chunk-8-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>h_star = hs[which.min(myloocvs)]
+smoothed = locfit(ys~Xs,alpha = c(h_star))
+plot(smoothed, col = &quot;red&quot;)
+lines(Xs,ys_true)</code></pre>
+<p><img src="figure/hw1.Rmd/unnamed-chunk-9-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># using package
+gcvs = gcvplot(ys~Xs, alpha = seq(0,0.5,0.01))
+plot(gcvs$alpha, gcvs$values)</code></pre>
+<p><img src="figure/hw1.Rmd/unnamed-chunk-10-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="plot-the-local-linear-estimates-using-optimum-bandwidth" class="section level3">
+<h3>Plot the local linear estimates using optimum bandwidth</h3>
+<pre class="r"><code>h_star = gcvs$alpha[which.min(gcvs$values)]
+smoothed = locfit(ys~Xs,alpha = c(h_star))
+plot(smoothed, col = &quot;red&quot;)
+lines(Xs,ys_true)</code></pre>
+<p><img src="figure/hw1.Rmd/unnamed-chunk-11-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+</div>
+<div id="compute-and-plot-the-confidence-interval-for-rx" class="section level2">
+<h2>compute and plot the confidence interval for r(x)</h2>
+<div id="i-assume-that-in-the-model-noise-epsilon-follows-n0sigma2-for-some-unknown-sigma-first-question-is-it-normal-second-constant-variance" class="section level9">
+<p>I assume that in the model noise <span class="math inline">\(\epsilon\)</span> follows <span class="math inline">\(N(0,\sigma^2)\)</span> for some unknown <span class="math inline">\(\sigma\)</span> (first question, is it normal, second: constant variance)</p>
+<p>For fixed x, <span class="math display">\[\hat{r}_{n}(x) = \sum_{i = 1}^{n} l_{i}(x) Y_{i} = \sum_{i = 1}^{n} l_{i}(x) (r(x_i) + \epsilon_{i})) = \sum_{i = 1}^{n} l_{i}(x)r(x_i) + \sum_{i = 1}^{n} l_{i}(x)\epsilon_{i}\]</span>. It is obvious that <span class="math inline">\(\hat{r}_{n}(x)\)</span> follows normal distribution, with mean <span class="math inline">\(r(x)\)</span>, variance <span class="math inline">\(\sigma_^2 |l(x)|^2\)</span>. (both can be found in ANoS). However, since we need to estimate <span class="math inline">\(\sigma\)</span> with data, using the formula:</p>
+<p><span class="math display">\[\hat{\sigma}(x)^{2} =  \frac{\sum_{i = 1}^{n} (Y_i - \hat{r_n}(x_i))^2}{n-2\gamma + \hat{\gamma}};     \gamma = tr(L), \hat{\gamma} = tr(L^TL)   \]</span></p>
+<p>then the <span class="math inline">\(I_{n}(x)\)</span> in question is <em>not</em> the 95 percent pointwise confidence interval for <span class="math inline">\(r(x)\)</span>, as we will need a F distribution, not a Z.</p>
+<p>Below I will plot the confidence interval <span class="math inline">\(I_{n}(x)\)</span> for <span class="math inline">\(r(x)\)</span>.</p>
+<pre class="r"><code>## assume sigma is constant
+n = length(Xs)
+gamma = as.numeric(smoothed$dp[&quot;df1&quot;])
+gamma_hat = as.numeric(smoothed$dp[&quot;df2&quot;])
+ys_smoothed = fitted(smoothed)
+sigma_hat = sum((ys-ys_smoothed)^2)/(n-2*gamma)
+
+## Gaussian kernel function
+K &lt;- function(x){
+  return(1/sqrt(2*pi) * exp(-x^2/2))
+}
+
+## l(x) for each x
+L &lt;- function(x,Xs,h){
+  l = sapply(Xs, function(xi) K((x-xi)/h))
+  return(l/sum(l))
+}
+
+L_norm &lt;- function(x,Xs,h){
+  l = L(x,Xs,h)
+  return(sqrt(sum(l^2)))
+}
+
+
+In_UpperLower &lt;- function(x,sm,Xs,h,sigma_hat,z=1.96){
+  ## sm is a locfit object
+  n = length(Xs)
+  ## rhat(x)
+  r_hat_x = predict(sm,x)
+  ## may also need to compute sigmahat(x) with some formula
+  
+  ## |l(x)|
+  l_x_norm = L_norm(x,Xs,h)
+  
+  upper = r_hat_x + z* sigma_hat * l_x_norm
+  lower = r_hat_x - z* sigma_hat * l_x_norm
+  return(c(upper,lower))
+}
+
+ups = replicate(length(Xs),0)
+los = replicate(length(Xs),0)
+for(i in 1:length(Xs)){
+  out = In_UpperLower(Xs[i],smoothed,Xs,h_star,sigma_hat)
+  ups[i] = out[1]
+  los[i] = out[2]
+}
+
+plot(smoothed, col = &quot;red&quot;)
+lines(ups,col = &quot;green&quot;)
+lines(los, col = &quot;blue&quot;)</code></pre>
+<p><img src="figure/hw1.Rmd/unnamed-chunk-12-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>summary(ys_smoothed)</code></pre>
+<pre><code>    Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
+-0.53218 -0.14360  0.06129  0.04957  0.28263  0.50210 </code></pre>
+<pre class="r"><code>summary(ups - los)</code></pre>
+<pre><code>    Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
+0.004861 0.004861 0.004861 0.004961 0.004861 0.006848 </code></pre>
+</div>
+<div id="comment-1" class="section level3">
+<h3>Comment:</h3>
+<p>The upper and lower bounds are very close to each other. By comparing the summary of y_hat and the difference between upper and lower bound, we can see that the differences are too small.</p>
+</div>
+</div>
+</div>
+<div id="kernel-density-estimate-for-old-faithful-geyser" class="section level1">
+<h1>3. Kernel density estimate for Old Faithful Geyser</h1>
+<pre class="r"><code>data(&quot;faithful&quot;)
+attach(faithful)
+
+library(kedd)
+ucv_eruptions = h.ucv(eruptions,nb = 1000)
+plot(ucv_eruptions)</code></pre>
+<p><img src="figure/hw1.Rmd/unnamed-chunk-13-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>$kernel
+[1] &quot;gaussian&quot;
+
+$deriv.order
+[1] 0
+
+$seq.bws
+ [1] 0.06382504 0.07988984 0.09595465 0.11201945 0.12808426 0.14414906
+ [7] 0.16021387 0.17627867 0.19234348 0.20840828 0.22447309 0.24053789
+[13] 0.25660269 0.27266750 0.28873230 0.30479711 0.32086191 0.33692672
+[19] 0.35299152 0.36905633 0.38512113 0.40118594 0.41725074 0.43331555
+[25] 0.44938035 0.46544516 0.48150996 0.49757477 0.51363957 0.52970438
+[31] 0.54576918 0.56183399 0.57789879 0.59396360 0.61002840 0.62609321
+[37] 0.64215801 0.65822282 0.67428762 0.69035243 0.70641723 0.72248204
+[43] 0.73854684 0.75461165 0.77067645 0.78674126 0.80280606 0.81887087
+[49] 0.83493567 0.85100048
+
+$ucv
+ [1] -0.4232268 -0.4258325 -0.4268588 -0.4268189 -0.4259983 -0.4246085
+ [7] -0.4228091 -0.4207043 -0.4183518 -0.4157788 -0.4129965 -0.4100111
+[13] -0.4068286 -0.4034573 -0.3999082 -0.3961946 -0.3923311 -0.3883332
+[19] -0.3842161 -0.3799950 -0.3756846 -0.3712988 -0.3668511 -0.3623543
+[25] -0.3578208 -0.3532625 -0.3486911 -0.3441178 -0.3395537 -0.3350094
+[31] -0.3304954 -0.3260215 -0.3215974 -0.3172321 -0.3129343 -0.3087120
+[37] -0.3045724 -0.3005222 -0.2965672 -0.2927126 -0.2889626 -0.2853210
+[43] -0.2817903 -0.2783726 -0.2750693 -0.2718809 -0.2688074 -0.2658482
+[49] -0.2630020 -0.2602672</code></pre>
+<pre class="r"><code>ucv_waiting = h.ucv(waiting,nb = 1000)
+plot(ucv_waiting)</code></pre>
+<p><img src="figure/hw1.Rmd/unnamed-chunk-13-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>$kernel
+[1] &quot;gaussian&quot;
+
+$deriv.order
+[1] 0
+
+$seq.bws
+ [1]  0.7602256  0.9515749  1.1429243  1.3342736  1.5256229  1.7169722
+ [7]  1.9083215  2.0996708  2.2910201  2.4823694  2.6737187  2.8650681
+[13]  3.0564174  3.2477667  3.4391160  3.6304653  3.8218146  4.0131639
+[19]  4.2045132  4.3958625  4.5872118  4.7785612  4.9699105  5.1612598
+[25]  5.3526091  5.5439584  5.7353077  5.9266570  6.1180063  6.3093556
+[31]  6.5007050  6.6920543  6.8834036  7.0747529  7.2661022  7.4574515
+[37]  7.6488008  7.8401501  8.0314994  8.2228487  8.4141981  8.6055474
+[43]  8.7968967  8.9882460  9.1795953  9.3709446  9.5622939  9.7536432
+[49]  9.9449925 10.1363419
+
+$ucv
+ [1] -0.02395152 -0.02440334 -0.02467032 -0.02482935 -0.02492616
+ [6] -0.02498823 -0.02503085 -0.02506151 -0.02508310 -0.02509613
+[11] -0.02510007 -0.02509402 -0.02507721 -0.02504910 -0.02500946
+[16] -0.02495830 -0.02489589 -0.02482263 -0.02473907 -0.02464581
+[21] -0.02454353 -0.02443293 -0.02431474 -0.02418970 -0.02405855
+[26] -0.02392202 -0.02378083 -0.02363570 -0.02348733 -0.02333637
+[31] -0.02318346 -0.02302922 -0.02287421 -0.02271897 -0.02256400
+[36] -0.02240976 -0.02225667 -0.02210509 -0.02195537 -0.02180779
+[41] -0.02166261 -0.02152005 -0.02138029 -0.02124346 -0.02110968
+[46] -0.02097903 -0.02085156 -0.02072730 -0.02060626 -0.02048841</code></pre>
+<div id="plot-estimated-density-with-optimum-h" class="section level2">
+<h2>plot estimated density with optimum h</h2>
+<pre class="r"><code>plot(density(eruptions, bw = ucv_eruptions$h))</code></pre>
+<p><img src="figure/hw1.Rmd/unnamed-chunk-14-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>plot(density(waiting, bw = ucv_waiting$h))</code></pre>
+<p><img src="figure/hw1.Rmd/unnamed-chunk-14-2.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+</div>
+<div id="capital-bike-sharing" class="section level1">
+<h1>5 Capital Bike Sharing</h1>
+<pre class="r"><code>data = read.csv(&quot;../data/hw1/train.csv&quot;)
+test = read.csv(&quot;../data/hw1/test.csv&quot;)
+
+fac_names = c(&quot;holiday&quot;,&quot;workingday&quot;,&quot;weather&quot;)
+for(i in 1:length(fac_names)){
+  name = fac_names[i]
+  data[[name]] = as.factor(data[[name]])
+  test[[name]] = as.factor(test[[name]])
+}
+data[[&quot;transformed_count&quot;]] = log(data$count + 1)
+
+## split train into train and validation
+train = data[data$day &lt; 16,]
+val = data[data$day &gt; 15,]</code></pre>
+<pre class="r"><code>#plot(density(train$count))
+hist(train$count)</code></pre>
+<p><img src="figure/hw1.Rmd/unnamed-chunk-16-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>library(tidyverse)</code></pre>
+<pre><code>── Attaching packages ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── tidyverse 1.2.1 ──</code></pre>
+<pre><code>✔ ggplot2 2.2.1     ✔ purrr   0.2.5
+✔ tibble  1.4.2     ✔ dplyr   0.7.4
+✔ tidyr   0.8.1     ✔ stringr 1.3.1
+✔ readr   1.1.1     ✔ forcats 0.3.0</code></pre>
+<pre><code>── Conflicts ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
+✖ dplyr::combine() masks gridExtra::combine()
+✖ tidyr::expand()  masks reshape::expand()
+✖ dplyr::filter()  masks stats::filter()
+✖ dplyr::lag()     masks stats::lag()
+✖ dplyr::rename()  masks reshape::rename()</code></pre>
+<pre class="r"><code>p1 = ggplot(train,aes(atemp, count, color = weather)) + 
+  geom_point()
+
+p2 = ggplot(train,aes(humidity,count,  color = weather)) + 
+  geom_point()
+
+p3 = ggplot(train,aes(windspeed,count,  color = weather)) + 
+  geom_point()
+
+grid.arrange(p1,p2,p3,nrow = 3)</code></pre>
+<p><img src="figure/hw1.Rmd/unnamed-chunk-17-1.png" width="672" style="display: block; margin: auto;" /> ### Comment: Findings: * on most of the days, there are no counts at all! The curve is like exponential. * counts higher on good weather * counts are highest when atemp is at around 30; more negatively affected if atemp is too low than too hot * counts are higher when windspeed is low * counts seem not to be affacted by humidity too much, though extreme humiditity (likely raining reduce counts)</p>
+<div id="a-linear-model-on-count" class="section level2">
+<h2>(a) linear model on count</h2>
+<pre class="r"><code>linearMD = lm(transformed_count~atemp+humidity+windspeed+weather, data=train)
+summary(linearMD)</code></pre>
+<pre><code>
+Call:
+lm(formula = transformed_count ~ atemp + humidity + windspeed + 
+    weather, data = train)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-5.5098 -0.6248  0.2366  0.8522  3.2233 
+
+Coefficients:
+              Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)  4.3459479  0.0718913  60.452  &lt; 2e-16 ***
+atemp        0.0631774  0.0015523  40.700  &lt; 2e-16 ***
+humidity    -0.0233339  0.0008053 -28.975  &lt; 2e-16 ***
+windspeed    0.0089966  0.0017553   5.125 3.03e-07 ***
+weather1.5  -3.4706308  0.8858171  -3.918 9.00e-05 ***
+weather2     0.2185450  0.0329459   6.633 3.48e-11 ***
+weather2.5  -3.4413334  0.7234583  -4.757 2.00e-06 ***
+weather3    -0.0241354  0.0547990  -0.440    0.660    
+weather4     1.9946955  1.2525671   1.592    0.111    
+---
+Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+
+Residual standard error: 1.252 on 8631 degrees of freedom
+Multiple R-squared:  0.2605,    Adjusted R-squared:  0.2598 
+F-statistic: 380.1 on 8 and 8631 DF,  p-value: &lt; 2.2e-16</code></pre>
+<pre class="r"><code>plot(linearMD)</code></pre>
+<p><img src="figure/hw1.Rmd/unnamed-chunk-18-1.png" width="672" style="display: block; margin: auto;" /><img src="figure/hw1.Rmd/unnamed-chunk-18-2.png" width="672" style="display: block; margin: auto;" /><img src="figure/hw1.Rmd/unnamed-chunk-18-3.png" width="672" style="display: block; margin: auto;" /><img src="figure/hw1.Rmd/unnamed-chunk-18-4.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>linearPredict = predict(linearMD, subset(val, colnames = c(&quot;atemp&quot;,&quot;humidity&quot;,&quot;windspeed&quot;,&quot;weather&quot;)))
+
+RMSLE_log &lt;- function(count_log,count_hat_log){
+  return(sqrt(mean((count_log-count_hat_log)^2)))
+}
+
+RMSLE_log(linearPredict,val$transformed_count)</code></pre>
+<pre><code>[1] 1.252436</code></pre>
+<pre class="r"><code>plot(val$transformed_count[1:100])
+lines(linearPredict,col = &quot;blue&quot;)</code></pre>
+<p><img src="figure/hw1.Rmd/unnamed-chunk-19-1.png" width="672" style="display: block; margin: auto;" /></p>
+<div id="comment-2" class="section level3">
+<h3>Comment:</h3>
+<p>Our model for linear regression is: <span class="math inline">\(Y = X*\beta + \epsilon\)</span>. The normality assumption holds, but the residue seems not to be independent of X. Also, the R-squared is only around 25%, meaning our model does not account for much variance in data. p-value suggests that we should reject the null hypothesis that the selected variables are not correlated with counts.</p>
+</div>
+</div>
+<div id="b-2" class="section level2">
+<h2>(b)</h2>
+<p>First, summarize the data by mean hourly counts</p>
+<pre class="r"><code>varnames = dimnames(train)[[2]]
+ids = varnames[varnames != &quot;transformed_count&quot;]
+
+val_mlt = melt(val,id = ids)
+
+train_mlt = melt(train,id = ids)
+train_mlt$value = as.numeric(train_mlt$value)
+train_hourmean = cast(train_mlt,daylabel~variable,sum)
+train_hourmean$transformed_count = train_hourmean$transformed_count / 24
+
+attach(train_hourmean)
+plot(daylabel,transformed_count)</code></pre>
+<p><img src="figure/hw1.Rmd/unnamed-chunk-20-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>attach(train_hourmean)</code></pre>
+<pre><code>The following objects are masked from train_hourmean (pos = 3):
+
+    daylabel, transformed_count</code></pre>
+<pre class="r"><code>train_hourmean_locfitmodel = locfit(transformed_count~daylabel)
+train_hourmean_locfit = predict(train_hourmean_locfitmodel,daylabel)
+
+plot(daylabel,train_hourmean_locfit)</code></pre>
+<p><img src="figure/hw1.Rmd/unnamed-chunk-21-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>train_hourmean_fitted = train_hourmean
+train_hourmean_fitted$transformed_count = train_hourmean_locfit</code></pre>
+<pre class="r"><code>attach(train_mlt)</code></pre>
+<pre><code>The following object is masked from train_hourmean (pos = 3):
+
+    daylabel</code></pre>
+<pre><code>The following object is masked from train_hourmean (pos = 4):
+
+    daylabel</code></pre>
+<pre class="r"><code>u_daylabels = unique(train_mlt$daylabel)
+## subtract the smoothed hourly mean from the counts in original dataset
+for(i in 1:length(u_daylabels)){
+  train_mlt[train_mlt$daylabel == u_daylabels[i],&quot;value&quot;] =  train_mlt[train_mlt$daylabel == u_daylabels[i],&quot;value&quot;] - train_hourmean_fitted[train_hourmean_fitted$daylabel == u_daylabels[i],&quot;transformed_count&quot;]
+}
+
+SmoothedLinearMD = lm(value ~ atemp+humidity+windspeed+weather, data = train_mlt)
+SmoothedLinearPredict = as.numeric(predict(SmoothedLinearMD, subset(val_mlt, colnames = c(&quot;atemp&quot;,&quot;humidity&quot;,&quot;windspeed&quot;,&quot;weather&quot;))))
+
+val_new_value = predict(train_hourmean_locfitmodel,val_mlt$daylabel) + SmoothedLinearPredict
+
+RMSLE_log(val_new_value, val_mlt$value)</code></pre>
+<pre><code>[1] 1.222907</code></pre>
+<pre class="r"><code>## show how the fit goes 
+plot(val_mlt$value[1:100])
+lines(val_new_value[1:100], col = &quot;blue&quot;)
+lines(linearPredict,col = &quot;red&quot;)</code></pre>
+<p><img src="figure/hw1.Rmd/unnamed-chunk-22-1.png" width="672" style="display: block; margin: auto;" /></p>
+<div id="comment-3" class="section level3">
+<h3>Comment:</h3>
+<p>There is some improvement in RMSLE (1.22 to 1.25, quite big considering it is on log scale)! But from a brief look at the first 100 fits, we cannot see its advantage over the linear model very well.</p>
+</div>
+</div>
+<div id="c-using-additive-model" class="section level2">
+<h2>(c) Using additive model</h2>
 </div>
 <div id="session-information" class="section level2">
 <h2>Session information</h2>
@@ -426,14 +959,32 @@ locale:
 attached base packages:
 [1] stats     graphics  grDevices utils     datasets  methods   base     
 
+other attached packages:
+ [1] forcats_0.3.0   stringr_1.3.1   dplyr_0.7.4     purrr_0.2.5    
+ [5] readr_1.1.1     tidyr_0.8.1     tibble_1.4.2    ggplot2_2.2.1  
+ [9] tidyverse_1.2.1 reshape_0.8.7   gridExtra_2.3   locfit_1.5-9.1 
+[13] kedd_1.0.3     
+
 loaded via a namespace (and not attached):
- [1] workflowr_1.0.1   Rcpp_0.12.16      digest_0.6.15    
- [4] rprojroot_1.3-2   R.methodsS3_1.7.1 backports_1.1.2  
- [7] git2r_0.21.0      magrittr_1.5      evaluate_0.10.1  
-[10] stringi_1.2.2     whisker_0.3-2     R.oo_1.22.0      
-[13] R.utils_2.6.0     rmarkdown_1.9     tools_3.4.3      
-[16] stringr_1.3.1     yaml_2.1.19       compiler_3.4.3   
-[19] htmltools_0.3.6   knitr_1.20       </code></pre>
+ [1] reshape2_1.4.3    haven_1.1.1       lattice_0.20-35  
+ [4] colorspace_1.3-2  htmltools_0.3.6   yaml_2.1.19      
+ [7] rlang_0.2.0       R.oo_1.22.0       pillar_1.2.2     
+[10] foreign_0.8-70    glue_1.2.0        R.utils_2.6.0    
+[13] readxl_1.1.0      modelr_0.1.2      bindrcpp_0.2.2   
+[16] bindr_0.1.1       plyr_1.8.4        cellranger_1.1.0 
+[19] munsell_0.4.3     gtable_0.2.0      workflowr_1.0.1  
+[22] rvest_0.3.2       R.methodsS3_1.7.1 psych_1.8.4      
+[25] evaluate_0.10.1   labeling_0.3      knitr_1.20       
+[28] parallel_3.4.3    broom_0.4.4       Rcpp_0.12.16     
+[31] backports_1.1.2   scales_0.5.0      jsonlite_1.5     
+[34] mnormt_1.5-5      hms_0.4.2         digest_0.6.15    
+[37] stringi_1.2.2     grid_3.4.3        rprojroot_1.3-2  
+[40] cli_1.0.0         tools_3.4.3       magrittr_1.5     
+[43] lazyeval_0.2.1    crayon_1.3.4      whisker_0.3-2    
+[46] pkgconfig_2.0.1   xml2_1.2.0        lubridate_1.7.4  
+[49] rstudioapi_0.7    assertthat_0.2.0  rmarkdown_1.9    
+[52] httr_1.3.1        R6_2.2.2          nlme_3.1-137     
+[55] git2r_0.21.0      compiler_3.4.3   </code></pre>
 </div>
 </div>
 
