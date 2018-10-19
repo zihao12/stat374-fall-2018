@@ -1,0 +1,101 @@
+---
+title: "Loc_fit_example"
+author: "Zihao_Wang"
+date: "10/17/2018"
+output: html_document
+---
+
+```{r}
+library(locfit)
+```
+
+## locfit and choose optimal bandwidth 
+```{r}
+Doppler <- function(x){
+  y = sqrt(x*(1-x)) * sin(2.1*pi/(x+0.05)) 
+  return(y)
+}
+
+f = Doppler
+n = 1000
+xlo = 0
+xhi = 1
+sigma = 0.1
+h = 0.01
+
+## generate data
+x = runif(n, xlo, xhi)
+y = Doppler(x) + rnorm(n, sd = sigma)
+
+## fit model using locfit
+locfitfit = locfit(y~x,alpha = c(0,h))
+
+## use GCV to choose bandwidth
+alphamat = matrix(0,ncol = 2, nrow = 30)
+alphamat[,2] = (1.2^(seq(30) - 30)) * 2 * (xhi-xlo)
+
+gcvs = gcvplot(y~x,alpha = alphamat)
+optband = gcvs$alpha[which.min(gcvs$values),2]
+locfitopt = locfit(y~x,alpha= c(0,optband))
+
+## make plots
+xg = seq(xlo,xhi, length = 1000)
+plot(x,y,xlab="x", ylab = "y", col = rgb(0.7,0.7,0.7))
+
+lines(xg, Doppler(xg) + rnorm(1000, sd = sigma), col = "black")
+lines(xg,predict(locfitfit, newdata = xg), col = "yellow")
+lines(xg,predict(locfitopt, newdata = xg), col = "blue")
+```
+
+## compute confidence band (assume homoscedasticity of variance)
+```{r}
+## compute confidence band
+## assumption: homoscedasticity of variance
+## formula: fhat(x) +- Z_alpha/2 sqrt(sigmahat(x)*|l_i(x)|^2)
+
+## sigmahat(x) = sum(residue^2) / (n - 2*nu - 2*nutilde), where nu = tr(L), nutilde = tr(L^t*T)
+## they can be retrived in dp1, dp2 respectively
+
+nu = locfitopt$dp[["df1"]]
+nutilde = locfitopt$dp[["df2"]]
+sigmahat = sum(residuals(locfitopt)^2)/(1000 - 2*nu + nutilde)
+
+
+diaghat = predict(locfitopt,where="data",what="infl") ## L_ii
+normell = predict(locfitopt,where="data",what="vari") ## |l_i(x)|
+
+critval = kappa0(locfitopt)$crit.val ## what is this??
+pred = predict(locfitopt, newdata = xg)
+
+width = critval * sqrt(sigmahat*normell)
+upper = pred + width
+lower = pred - width
+
+
+## plot confidence band
+plot(xg, pred,lwd=3, xlab="l",ylab="Cl",cex=3,cex.axis=1.3, cex.lab=1.3,type="l")
+lines(xg, upper,col = 2, lwd = 3)
+lines(xg, lower,col = 3, lwd = 3)
+
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

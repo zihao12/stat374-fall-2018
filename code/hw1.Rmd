@@ -2,7 +2,7 @@
 title: "hw1"
 author: "Zihao_Wang"
 date: "10/7/2018"
-output: html_document
+output: pdf_document
 ---
 
 ```{r}
@@ -475,7 +475,6 @@ I got the best prediction from part (c). Though gam can lift my the model perfor
 ```{r}
 ## prediction on test
 GamLm_test = predict(gamMD,test) + predict(locfitmodel_hourmean_train, test$daylabel)
-GamLm_test = exp(GamLm_test) - 1
 write.table(as.numeric(GamLm_test), "../data/assn1-wangzh.txt", row.names = FALSE, col.names=FALSE, sep = "\n")
 ```
 
