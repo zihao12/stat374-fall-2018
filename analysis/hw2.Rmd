@@ -1,0 +1,289 @@
+---
+title: "Stat374 HW2"
+author: "Zihao_Wang"
+date: "10/26/2018"
+output: html_document
+---
+
+```{r}
+rm(list=ls())
+set.seed(12345)
+options(warn = -1)
+knitr::opts_knit$set(root.dir = '~/Desktop/stat374-fall-2018/analysis/')
+library(kedd)
+library(locfit)
+library(gridExtra)
+library(reshape)
+library(gam)
+library(MASS)
+library(mvtnorm)
+#library(tidyverse)
+suppressMessages(library("tidyverse"))
+```
+
+# 1 The Mean Shift Algorithm
+## (a)
+
+## (b)
+```{r}
+K <- function(x){
+  return((1/sqrt(2*pi)) * exp(-0.5*x^2)) 
+}
+
+
+GD <- function(w,X,h,max_step = 100, epsilon = 0.01){
+  num_step = 0
+  while(num_step < max_step){
+    w_old = w
+    k_diff = K((X-w)/h)
+    w = (t(X) %*% k_diff) / sum(k_diff)
+    if (abs(w-w_old) < epsilon) break 
+    num_step = num_step + 1
+  }
+  return(w)
+}
+
+```
+
+```{r}
+data11 <- read.table("../data/hw2/meanshift-500.txt", header = FALSE)
+data12 <- read.table("../data/hw2/meanshift-10k.txt", header = FALSE)
+
+data11 <- data11[,1]
+n1 = length(data11)
+
+data12 <- data12[,1]
+n2 = length(data12)
+```
+
+```{r}
+plot(density(data11))
+```
+
+```{r}
+idx1 = sample(1:n1, 100, replace = FALSE)
+modes11 <- sapply(data11[idx1], function(x) GD(x,data11,h = 0.5))
+plot(modes11)
+
+```
+
+### Comment:
+From the scatter plot of our estimated modes, we can see that the mean shift algorithm finds two most prominent modes around 0. Most of the sampled points converge to one of the two modes.
+
+```{r}
+plot(density(data12))
+```
+```{r}
+idx2 = sample(1:n2, 1000, replace = FALSE)
+modes12 <- sapply(data12[idx2], function(x) GD(x,data12,h = 0.5))
+plot(modes12)
+
+```
+### Comment:
+* Our algorithm finds two modes. 
+* However, this time the data have many modes but we only find the top two modes. 
+* It is possible that our sample size is not big enough, so that the points near other modes are not sampled frequently.
+* Also, a small proportion of the starting points fail to converge to one of the modes.
+
+
+
+# 4 Pulling Yourself Up by the Bootstrap
+```{r}
+B = 1000 ## number of bootstrap replicates
+n_exper = 500 ## number of experiments
+alpha = 0.05 ## (1-alpha) confidence interval
+```
+
+## (a)
+```{r}
+## generate data from Y = (1,X, X^2) * beta + e
+n = 100
+beta = c(-1,2,-1)
+X = runif(n,0,2)
+X_expand = cbind(X^0, X, X^2)
+e = rnorm(n,0,0.2^2)
+Y = X_expand %*% beta + e
+
+```
+
+
+```{r}
+estimate_theta1 <- function(X,Y, seed){
+  set.seed(seed)
+  idx = sample(1:n, B, replace = TRUE)
+  X_sampled = X[idx]
+  Y_sampled = Y[idx]
+  
+  model =  lm(Y_sampled ~ 1 + X_sampled + I(X_sampled^2))
+  beta = as.numeric(model$coefficients)
+  theta = - beta[2]/(2*beta[3])
+  return(theta)
+}
+
+## experiments
+seeds = 1:n_exper
+theta_em = sapply(seeds, function(seed) estimate_theta1(X,Y,seed))
+
+## find (1-alpha) CI
+plot(density(theta_em))
+print(quantile(theta_em, probs = c(alpha,1-alpha)))
+
+```
+
+## (b)
+```{r}
+## generate data from X = 10Z + e, Y = 10Z + delta
+n = 100
+e = rnorm(n,0,1)
+delta = rnorm(n,0,1)
+Z = rnorm(n,0,1)
+X = 10 * Z + e
+Y = 10 * Z + delta
+
+estimate_theta2 <- function(X,Y,Z, seed){
+  set.seed(seed)
+  idx = sample(1:n, B, replace = TRUE)
+  X_sampled = X[idx]
+  Y_sampled = Y[idx]
+  Z_sampled = Z[idx]
+  
+  XYZ = cbind(X_sampled,Y_sampled,Z_sampled)
+  Sigma = cov(XYZ)
+  Omega = ginv(Sigma)
+  theta_hat = - Omega[1,2] / (sqrt(Omega[1,1]*Omega[2,2]))
+  return(theta_hat)
+}
+
+## experiments
+seeds = 1:n_exper
+theta_em2 = sapply(seeds, function(seed) estimate_theta2(X,Y,Z,seed))
+
+## find (1-alpha) CI
+plot(density(theta_em2))
+print(quantile(theta_em2, probs = c(alpha,1-alpha)))
+
+```
+
+## (c)
+```{r}
+n = 100
+p = 10
+Sigma = diag(p)
+generateX3 <- function(p){
+  return(as.vector(rmvnorm(1,replicate(p,0),Sigma)))
+}
+X = t(replicate(n,generateX3(p)))
+
+estimate_theta3 <- function(X,seed){
+  set.seed(seed)
+  idx = sample(1:n, B, replace = TRUE)
+  X_sampled = X[idx,]
+  Sigma = cov(X_sampled)
+  theta_hat = tail(svd(Sigma)$d,1)
+  return(theta_hat)
+}
+
+## experiments
+seeds = 1:n_exper
+theta_em3 = sapply(seeds, function(seed) estimate_theta3(X,seed))
+
+## find (1-alpha) CI
+plot(density(theta_em3))
+print(quantile(theta_em3, probs = c(alpha,1-alpha)))
+
+```
+
+# 5
+
+## (a)
+Use the notation as in the lecture.\
+
+Show by induction. Let $P_k := \sum_{j = k}^\infty w_k$. We want to show that $P_k = \Pi_{j = 1}^k (1-\gamma_J) $ with probability 1.\
+
+When $k = 1$, of course $P_1 = 1-\gamma_1$ with probability 1.\
+
+Now assume the case for $k$ is right, prove the case for $k+1$ as below:\
+
+With probability 1 we have:
+$$ P_{k+1} = P_k - w_k  = \Pi_{j = 1}^k (1-\gamma_j) - \gamma_k \Pi_{i = 1}^{k-1}(1-\gamma_i) = \Pi_{j = 1}^{k+1} (1-\gamma_j)$$
+
+## (b)
+
+## (c)
+
+## (d)
+```{r}
+dp_normal <- function(N=1000,alpha){
+  G_0 <- function(N) rnorm(N, 0, 1)
+  s = G_0(N)
+  gamma = rbeta(N,1,alpha)
+  w = numeric(N)
+  w[1] = gamma[1]
+  w[2:N] = sapply(2:N, function(i) gamma[i] * prod(1-gamma[1:(i-1)]))
+  
+  dp_samples = sample(s,prob = w, replace = TRUE)
+  return(plot(density(dp_samples), main = paste0("alpha = ", alpha)))
+}
+
+```
+
+```{r}
+par(mfrow=c(2,2))
+dp_normal(alpha = 0.1)
+dp_normal(alpha = 1)
+dp_normal(alpha = 100)
+dp_normal(alpha = 10000)
+
+
+```
+
+## (e)
+
+### 1
+Empirical cdf can just by computed using formula.\
+
+BY DKW,
+$$  \Pr(sup_{x \in R } |F_n(x) = F(x)| > \epsilon)  < 2e^{-2n\epsilon^2} $$
+
+Let $\alpha = 2e^{-2n\epsilon^2}$, we have $\epsilon = (\frac{1}{2n} log(2/\alpha))^{1/2}$ and that $[F_n(x)-\epsilon,F_n(x)+\epsilon]$ is our $1-\alpha$ confidence band.
+
+```{r}
+n = 10
+
+emcdf_cb <- function(n){
+  F = function(n) rnorm(n,0,1)
+  X = F(n)
+  ## empirical cdf
+  empirical_CDF <- function(x,X){
+    n = length(X)
+    return(length(X[X < x])/n)
+  } 
+  
+  xs = seq(-3,3,0.1)
+  em_cdf = sapply(xs, function(x) empirical_CDF(x,X))
+  cb_width = sqrt(1/(2*n) * log(2/0.05))
+  
+  plot(xs, em_cdf, type = "l", main = paste0("n = ", n))
+  lines(xs, em_cdf + cb_width, col = "red")
+  lines(xs, em_cdf - cb_width, "col" = "green")
+}
+
+
+```
+
+```{r}
+par(mfrow=c(3,1))
+emcdf_cb(10)
+emcdf_cb(25)
+emcdf_cb(100)
+```
+#### Comment:
+As n (the number of samples) gets larger, the empirical cdf gets smoother, with confidence band width smaller.
+
+
+
+
+
+
+
+
