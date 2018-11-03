@@ -318,11 +318,11 @@ div.section {
 </div>
 
 
-<p><strong>Last updated:</strong> 2018-10-28</p>
+<p><strong>Last updated:</strong> 2018-11-03</p>
 <strong>workflowr checks:</strong> <small>(Click a bullet for more information)</small>
 <ul>
 <li>
-<p><details> <summary> <strong style="color:red;">✖</strong> <strong>R Markdown file:</strong> uncommitted changes </summary> The R Markdown is untracked by Git. To know which version of the R Markdown file created these results, you’ll want to first commit it to the Git repo. If you’re still working on the analysis, you can ignore this warning. When you’re finished, you can run <code>wflow_publish</code> to commit the R Markdown file and build the HTML.</p>
+<p><details> <summary> <strong style="color:red;">✖</strong> <strong>R Markdown file:</strong> uncommitted changes </summary> The R Markdown file has unstaged changes. To know which version of the R Markdown file created these results, you’ll want to first commit it to the Git repo. If you’re still working on the analysis, you can ignore this warning. When you’re finished, you can run <code>wflow_publish</code> to commit the R Markdown file and build the HTML.</p>
 </details>
 </li>
 <li>
@@ -341,37 +341,92 @@ div.section {
 </details>
 </li>
 <li>
-<p><details> <summary> <strong style="color:blue;">✔</strong> <strong>Repository version:</strong> <a href="https://github.com/zihao12/stat374-fall-2018/tree/687ae4e26de5668dcd34eaec33e4bc55f2c9818a" target="_blank">687ae4e</a> </summary></p>
+<p><details> <summary> <strong style="color:blue;">✔</strong> <strong>Repository version:</strong> <a href="https://github.com/zihao12/stat374-fall-2018/tree/6add893c63e82b3660797f59c43b011cc7d74232" target="_blank">6add893</a> </summary></p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility. The version displayed above was the version of the Git repository at the time these results were generated. <br><br> Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
 <pre><code>
 Ignored files:
     Ignored:    .DS_Store
+    Ignored:    .Rhistory
+    Ignored:    .Rproj.user/
     Ignored:    data/.DS_Store
 
 Untracked files:
-    Untracked:  Quiz 1.pdf
-    Untracked:  analysis/hw2.Rmd
-    Untracked:  assignment/assignment2.pdf
-    Untracked:  code/hw1.pdf
-    Untracked:  code/ttest.Rmd
-    Untracked:  code/ttest.pdf
-    Untracked:  data/hw2/
-    Untracked:  docs/figure/hw2.Rmd/
+    Untracked:  code/DirProcess.r
+    Untracked:  code/hw2.Rmd
+    Untracked:  code/hw2.pdf
+    Untracked:  data/hw2/coverage1.rds
+    Untracked:  data/hw2/coverage2.rds
+    Untracked:  data/hw2/coverage3.rds
+    Untracked:  data/hw2/modes12.rds
 
 Unstaged changes:
-    Modified:   code/hw1.Rmd
-    Deleted:    code/hw1.aux
-    Deleted:    code/hw1.fdb_latexmk
-    Deleted:    code/hw1.fls
-    Deleted:    code/hw1.log
-    Deleted:    code/hw1.out
-    Deleted:    code/hw1.tex
-    Modified:   data/assn1-wangzh.txt
+    Modified:   analysis/hw2.Rmd
 
 </code></pre>
 Note that any generated files, e.g. HTML, png, CSS, etc., are not included in this status report because it is ok for generated content to have uncommitted changes. </details>
 </li>
 </ul>
+<details> <summary> <small><strong>Expand here to see past versions:</strong></small> </summary>
+<ul>
+<table style="border-collapse:separate; border-spacing:5px;">
+<thead>
+<tr>
+<th style="text-align:left;">
+File
+</th>
+<th style="text-align:left;">
+Version
+</th>
+<th style="text-align:left;">
+Author
+</th>
+<th style="text-align:left;">
+Date
+</th>
+<th style="text-align:left;">
+Message
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Rmd
+</td>
+<td style="text-align:left;">
+<a href="https://github.com/zihao12/stat374-fall-2018/blob/6add893c63e82b3660797f59c43b011cc7d74232/analysis/hw2.Rmd" target="_blank">6add893</a>
+</td>
+<td style="text-align:left;">
+zihao12
+</td>
+<td style="text-align:left;">
+2018-10-30
+</td>
+<td style="text-align:left;">
+hw2 half done
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+html
+</td>
+<td style="text-align:left;">
+<a href="https://cdn.rawgit.com/zihao12/stat374-fall-2018/6add893c63e82b3660797f59c43b011cc7d74232/docs/hw2.html" target="_blank">6add893</a>
+</td>
+<td style="text-align:left;">
+zihao12
+</td>
+<td style="text-align:left;">
+2018-10-30
+</td>
+<td style="text-align:left;">
+hw2 half done
+</td>
+</tr>
+</tbody>
+</table>
+</ul>
+<p></details></p>
 <hr />
 <pre class="r"><code>rm(list=ls())
 set.seed(12345)
@@ -390,12 +445,366 @@ library(gam)</code></pre>
 library(mvtnorm)
 #library(tidyverse)
 suppressMessages(library(&quot;tidyverse&quot;))</code></pre>
+<div id="the-mean-shift-algorithm" class="section level1">
+<h1>1 The Mean Shift Algorithm</h1>
+<div id="a" class="section level2">
+<h2>(a)</h2>
+<p>Since we do not know the true <span class="math inline">\(p(x)\)</span>, we can only find modes approximately on <span class="math inline">\(\hat{p}_n(x)\)</span>. We can find one solution of the differential equation by Gradient Descent determined by the starting point <span class="math inline">\(w\)</span>: <span class="math inline">\(w_{t+1} = w_t + \eta \hat{p}_n(w_t)\)</span>, with <span class="math inline">\(w_0 = w\)</span>. If we define <span class="math inline">\(\alpha := \frac{\eta}{h^2}\)</span> and write out that equation, we have:</p>
+<p><span class="math display">\[ w_{t+1} = w_t - \frac{\eta}{h^2} \sum_{i= 1}^n (w_t -x_i)  K(\frac{w_t-x_i}{h}) = \alpha \sum_{i = 1}^n x_i K(\frac{w_t-x_i}{h}) + w_t(1-\alpha \sum_{i=1}^n K(\frac{w_t-x_i}{h}))\]</span> Therefore, when we set <span class="math inline">\(\alpha = \frac{1}{\sum_{i=1}^n K(\frac{w_t-x_i}{h})}\)</span>, we have the <span class="math display">\[ w_{t+1} = \frac{\sum_{i = 1}^n x_i K(\frac{w_t-x_i}{h})}{\sum_{i = 1}^n K(\frac{w_t-x_i}{h})}    \]</span></p>
+</div>
+<div id="b" class="section level2">
+<h2>(b)</h2>
+<pre class="r"><code>K &lt;- function(x){
+  return((1/sqrt(2*pi)) * exp(-0.5*x^2)) 
+}
+
+
+GD &lt;- function(w,X,h,max_step = 100, epsilon = 0.01){
+  num_step = 0
+  while(num_step &lt; max_step){
+    w_old = w
+    k_diff = K((X-w)/h)
+    w = (t(X) %*% k_diff) / sum(k_diff)
+    if (abs(w-w_old) &lt; epsilon) break 
+    num_step = num_step + 1
+  }
+  return(w)
+}</code></pre>
+<pre class="r"><code>data11 &lt;- read.table(&quot;../data/hw2/meanshift-500.txt&quot;, header = FALSE)
+data12 &lt;- read.table(&quot;../data/hw2/meanshift-10k.txt&quot;, header = FALSE)
+
+data11 &lt;- data11[,1]
+n1 = length(data11)
+
+data12 &lt;- data12[,1]
+n2 = length(data12)</code></pre>
+<pre class="r"><code>plot(density(data11))</code></pre>
+<p><img src="figure/hw2.Rmd/unnamed-chunk-4-1.png" width="672" style="display: block; margin: auto;" /></p>
+<details> <summary><em>Expand here to see past versions of unnamed-chunk-4-1.png:</em></summary>
+<table style="border-collapse:separate; border-spacing:5px;">
+<thead>
+<tr>
+<th style="text-align:left;">
+Version
+</th>
+<th style="text-align:left;">
+Author
+</th>
+<th style="text-align:left;">
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+<a href="https://github.com/zihao12/stat374-fall-2018/blob/6add893c63e82b3660797f59c43b011cc7d74232/docs/figure/hw2.Rmd/unnamed-chunk-4-1.png" target="_blank">6add893</a>
+</td>
+<td style="text-align:left;">
+zihao12
+</td>
+<td style="text-align:left;">
+2018-10-30
+</td>
+</tr>
+</tbody>
+</table>
+<p></details></p>
+<pre class="r"><code>idx1 = sample(1:n1, 100, replace = FALSE)
+modes11 &lt;- sapply(data11[idx1], function(x) GD(x,data11,h = 0.5))
+plot(modes11)</code></pre>
+<p><img src="figure/hw2.Rmd/unnamed-chunk-5-1.png" width="672" style="display: block; margin: auto;" /></p>
+<details> <summary><em>Expand here to see past versions of unnamed-chunk-5-1.png:</em></summary>
+<table style="border-collapse:separate; border-spacing:5px;">
+<thead>
+<tr>
+<th style="text-align:left;">
+Version
+</th>
+<th style="text-align:left;">
+Author
+</th>
+<th style="text-align:left;">
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+<a href="https://github.com/zihao12/stat374-fall-2018/blob/6add893c63e82b3660797f59c43b011cc7d74232/docs/figure/hw2.Rmd/unnamed-chunk-5-1.png" target="_blank">6add893</a>
+</td>
+<td style="text-align:left;">
+zihao12
+</td>
+<td style="text-align:left;">
+2018-10-30
+</td>
+</tr>
+</tbody>
+</table>
+<p></details></p>
+<div id="comment" class="section level3">
+<h3>Comment:</h3>
+<p>From the scatter plot of our estimated modes, we can see that the mean shift algorithm finds two most prominent modes around 0. Most of the sampled points converge to one of the two modes.</p>
+<pre class="r"><code>plot(density(data12))</code></pre>
+<p><img src="figure/hw2.Rmd/unnamed-chunk-6-1.png" width="672" style="display: block; margin: auto;" /></p>
+<details> <summary><em>Expand here to see past versions of unnamed-chunk-6-1.png:</em></summary>
+<table style="border-collapse:separate; border-spacing:5px;">
+<thead>
+<tr>
+<th style="text-align:left;">
+Version
+</th>
+<th style="text-align:left;">
+Author
+</th>
+<th style="text-align:left;">
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+<a href="https://github.com/zihao12/stat374-fall-2018/blob/6add893c63e82b3660797f59c43b011cc7d74232/docs/figure/hw2.Rmd/unnamed-chunk-6-1.png" target="_blank">6add893</a>
+</td>
+<td style="text-align:left;">
+zihao12
+</td>
+<td style="text-align:left;">
+2018-10-30
+</td>
+</tr>
+</tbody>
+</table>
+<p></details></p>
+<pre class="r"><code>idx2 = sample(1:n2, 1000, replace = FALSE)
+# modes12 &lt;- sapply(data12[idx2], function(x) GD(x,data12,h = 0.5))
+# saveRDS(modes12,&quot;../data/hw2/modes12.rds&quot;)
+modes12 = readRDS(&quot;../data/hw2/modes12.rds&quot;)
+plot(modes12)</code></pre>
+<p><img src="figure/hw2.Rmd/unnamed-chunk-7-1.png" width="672" style="display: block; margin: auto;" /> ### Comment: * Our algorithm finds two modes. * However, this time the data have many modes but we only find the top two modes. * It is possible that our sample size is not big enough, so that the points near other modes are not sampled frequently. * Also, a small proportion of the starting points fail to converge to one of the modes.</p>
+</div>
+</div>
+</div>
+<div id="the-wizard-of-ozone" class="section level1">
+<h1>2 The Wizard of Ozone</h1>
+<pre class="r"><code>#install.packages(&quot;fields&quot;)
+library(fields)</code></pre>
+<pre><code>Loading required package: spam</code></pre>
+<pre><code>Loading required package: dotCall64</code></pre>
+<pre><code>Loading required package: grid</code></pre>
+<pre><code>Spam version 2.2-0 (2018-06-19) is loaded.
+Type &#39;help( Spam)&#39; or &#39;demo( spam)&#39; for a short introduction 
+and overview of this package.
+Help for individual functions is also obtained by adding the
+suffix &#39;.spam&#39; to the function name, e.g. &#39;help( chol.spam)&#39;.</code></pre>
+<pre><code>
+Attaching package: &#39;spam&#39;</code></pre>
+<pre><code>The following objects are masked from &#39;package:base&#39;:
+
+    backsolve, forwardsolve</code></pre>
+<pre><code>Loading required package: maps</code></pre>
+<pre><code>
+Attaching package: &#39;maps&#39;</code></pre>
+<pre><code>The following object is masked from &#39;package:purrr&#39;:
+
+    map</code></pre>
+<pre><code>See www.image.ucar.edu/~nychka/Fields for
+ a vignette and other supplements. </code></pre>
+<pre class="r"><code>data(ozone2)</code></pre>
+<div id="a-1" class="section level2">
+<h2>(a)</h2>
+<p>Our 2D kernel estimation is</p>
+<p><span class="math display">\[  \hat{f_n}(x,y) = \sum_{j = 1}^n l_j(x,y) Z_j; \ l_j(x_i, y_i) = \frac{K(\frac{X_j-x_i}{h}) K(\frac{Y_j-y_i}{h})}{\sum_{k = 1}^n K(\frac{X_k-x_i}{h}) K(\frac{Y_k-y_i}{h})} \]</span> And to find the optimal <span class="math inline">\(h\)</span> using cross-validation, we have the following formula: <span class="math display">\[ CV = \hat{R}(h) = \frac{1}{n} \sum_{i = 1}^n (Z_i - \hat{f}_n^{(-i)} (x_i,y_i))^2 =  \frac{1}{n} \sum_{i = 1}^n (\frac{Z_i - \hat{Z_i}}{1-L_{ii}})^2   \]</span></p>
+<p>In computation of cv score, we need to obtain <span class="math inline">\(L\)</span>. I detail the procedure below:<br />
+First, obtain the <span class="math inline">\(L_{unweighted}\)</span> by doing element wise product between <span class="math inline">\(K_X, K_Y\)</span>, where <span class="math inline">\((K_X)_{i,j} = K(\frac{X_j - X_i}{h})\)</span>, <span class="math inline">\((K_Y)_{i,j} = K(\frac{Y_j - Y_i}{h})\)</span>.<br />
+Then normalize <span class="math inline">\(L_{unweighted}\)</span> so that each of its row sums to one.</p>
+<pre class="r"><code>xs &lt;- seq(-93,-82,.1)
+ys &lt;- seq(40,46,.1)
+
+X = ozone2$lon.lat[,1] ## X of training data
+Y = ozone2$lon.lat[,2] ## Y of training data
+Z = ozone2$y[which(ozone2$dates == &quot;870618&quot;),]
+Z[is.na(Z)] = 0 ## set NA to 0</code></pre>
+<pre class="r"><code>cv &lt;- function(X,Y,Z,h){
+  # compute L
+  n = length(X)
+  ## compute K_X
+  X_rep = replicate(n,X) ## X_rep = [X,X,...X] 
+  K_X = K((t(X_rep) - X_rep)/h) ## K_X_ij = K((Xj-Xi)/h)
+  ## compute K_Y
+  Y_rep = replicate(n,Y) ## Y_rep = [Y,Y,...Y] 
+  K_Y = K((t(Y_rep) - Y_rep)/h) ## K_Y_ij = K((Yj-Yi)/h)
+  ## compute L_unweighted
+  L_unweighted = K_X * K_Y
+  ## normalize L_unweighted so that row sums to 1
+  D = diag(1/rowSums(L_unweighted))
+  L = D %*% L_unweighted
+  
+  # compute Z_hat
+  Z_hat = L %*% Z
+  
+  ## compute CV
+  one_minus_Lii = 1-diag(L)
+  if (min(one_minus_Lii) == 0) one_minus_Lii[one_minus_Lii == 0] = 1e-50 ## Without this, some of the elements might be zero and cause the result to be NAN
+  CV = mean(((Z-Z_hat)/one_minus_Lii)^2)
+  return(CV)
+}</code></pre>
+<pre class="r"><code>hs2 = seq(2,10,1)
+hs1 = seq(0.1,1,0.1)
+hs0 = seq(0.01,0.09,0.01)
+hs = c(hs0,hs1,hs2)
+CVs = sapply(hs,function(h) cv(X,Y,Z,h))
+h_opt = hs[which.min(CVs)]
+print(paste0(&quot;optimal h is &quot;,h_opt))</code></pre>
+<pre><code>[1] &quot;optimal h is 0.2&quot;</code></pre>
+<pre class="r"><code>## because some of the CVs blow up, I decide to throw them away for plotting
+keep = which(CVs &lt; 1e+10)
+plot(hs[keep],CVs[keep])</code></pre>
+<p><img src="figure/hw2.Rmd/unnamed-chunk-11-1.png" width="672" style="display: block; margin: auto;" /></p>
+<div id="comment-1" class="section level3">
+<h3>Comment:</h3>
+<p>I choose the optimal bandwidth that minimizes the LOOCV.</p>
+<pre class="r"><code>K_regression &lt;- function(x,y,X,Y,Z,h){
+  k_x = K((X-x)/h)
+  k_y = K((Y-y)/h)
+  l_unweighted = k_x*k_y
+  l = l_unweighted/sum(l_unweighted)
+  
+  Z_hat = t(l) %*% Z
+  return(Z_hat)
+}
+
+n1 = length(xs)
+n2 = length(ys)
+z_hats &lt;- matrix(replicate(n1*n2,0), nrow = n1, ncol = n2)
+for(i in 1:n1){
+  for(j in 1:n2){
+    z_hats[i,j] = K_regression(xs[i],ys[j],X,Y,Z,h_opt)
+  }
+}
+
+image.plot(xs,ys,z_hats, col = rainbow(128,alpha = .5))
+US(add = T, lwd = 2, col = 1)</code></pre>
+<p><img src="figure/hw2.Rmd/unnamed-chunk-12-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+</div>
+<div id="b-1" class="section level2">
+<h2>(b)</h2>
+<p>My analogous algorithm is a more discrete version. This is a “mountain climbing”, algorithm; instead of seaching the entire domain of <span class="math inline">\((X,Y)\)</span>, we search among the points in the grid. So suppose we start from <span class="math inline">\((x_i,y_j)\)</span>, we search the neighboring points (the four closest points),find the one with the highest value of <span class="math inline">\(Z\)</span> (the ozone level) and update <span class="math inline">\((x_{i+1},y_{j+1})\)</span> to that point; we do so iteratively.</p>
+<pre class="r"><code>mountain_climbing &lt;- function(x_start, y_start,xs,ys,zs,max_iter = 100){
+  ## (x_start, y_start) is the starting position; range is min(xs):max(xs) for x_start, min(ys):max(ys) for y_start
+  ## xs, ys are the coordinates of the points in the grid; they are vectors
+  ## zs is the estimated values of f(xs,ys) obtained in (a); it is a matrix of shape (length(xs), length(ys))
+  n1 = length(xs)
+  n2 = length(ys)
+  
+  ## find the closest point in grid to (x_start, y_start)
+  xs_diff = xs - x_start
+  ys_diff = ys - y_start
+  
+  
+  xt = which.min(abs(xs_diff))
+  yt = which.min(abs(ys_diff))
+  # xt = x_start
+  # yt = y_start
+  
+  num_iter = 1
+  traj_x = vector()
+  traj_y = vector()
+  while(num_iter &lt; max_iter){
+    num_iter = num_iter + 1
+    
+    neighbors &lt;- matrix(replicate(12,-Inf),nrow = 4, ncol = 3) 
+    ## there are four possible neighbours; each row contains the x,y,z of that neighbour; if that neoghbour does not exist, the z component is -Inf
+    
+    ## left neighbour
+    neighbors[1,1:2] = c(xt-1,yt)
+    if (xt-1 &gt; 0) neighbors[1,3] = zs[xt-1,yt]
+    ## right neighbour
+    neighbors[2,1:2] = c(xt+1,yt)
+    if (xt+1 &lt; n1) neighbors[2,3] = zs[xt+1,yt]
+    ## up neighbour
+    neighbors[3,1:2] = c(xt,yt-1)
+    if (yt-1 &gt; 0) neighbors[3,3] = zs[xt,yt-1]
+    ## down neighbour
+    neighbors[4,1:2] = c(xt,yt+1)
+    if (yt+1 &lt; n2) neighbors[4,3] = zs[xt,yt+1]
+    
+    if(zs[xt,yt] &gt; max(neighbors[,3])) break ## then we are already at local optimum
+    
+    new = neighbors[which.max(neighbors[,3]),1:2]
+    xt= new[1]
+    yt = new[2]
+    traj_x = c(traj_x,xt)
+    traj_y = c(traj_y,yt)
+  }
+  return(list(xf = xt,yf = yt, traj_x = traj_x,traj_y = traj_y))
+}</code></pre>
+<pre class="r"><code>exper_2b &lt;- function(x_start, y_start,xs,ys,zs,max_iter = 100){
+  exper1 = mountain_climbing(x_start, y_start,xs,ys,zs,max_iter = 100)
+  image.plot(xs,ys,zs, col = rainbow(128,alpha = .5))
+  US(add = T, lwd = 2, col = 1)
+  # image.plot(xs[exper1$traj_x], ys[exper1$traj_y],z_hats[xs[exper1$traj_x],ys[exper1$traj_y]], add = TRUE)
+  lines(xs[exper1$traj_x], ys[exper1$traj_y], col = &quot;red&quot;, lwd = 5)
+}</code></pre>
+<pre class="r"><code>exper_2b(-87.6,45,xs,ys,z_hats,max_iter = 100)</code></pre>
+<p><img src="figure/hw2.Rmd/unnamed-chunk-15-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>exper_2b(-88.5,42.5,xs,ys,z_hats,max_iter = 100)</code></pre>
+<p><img src="figure/hw2.Rmd/unnamed-chunk-16-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>exper_2b(-84.5,41,xs,ys,z_hats,max_iter = 100)</code></pre>
+<p><img src="figure/hw2.Rmd/unnamed-chunk-17-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>exper_2b(-84,41,xs,ys,z_hats,max_iter = 100)</code></pre>
+<p><img src="figure/hw2.Rmd/unnamed-chunk-18-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>exper_2b(-91,45,xs,ys,z_hats,max_iter = 100)</code></pre>
+<p><img src="figure/hw2.Rmd/unnamed-chunk-19-1.png" width="672" style="display: block; margin: auto;" /></p>
+<div id="comment-2" class="section level3">
+<h3>Comment</h3>
+<p>Though our method is a very rough approximation, we can still see that it can “climb” to a neighbouring mode. There is lots of room for improvemnet. For example, we can do gradient descent on the regression function; or choose finer grids and serach for a bigger neighbourhood. But due to time limitation I just show this primitive method.</p>
+</div>
+</div>
+<div id="c" class="section level2">
+<h2>(c)</h2>
+<p>One most general way is to assume <span class="math inline">\(Z = f(X,Y,t) + \epsilon\)</span>, where <span class="math inline">\((X,Y)\)</span> are the spatial component and <span class="math inline">\(t\)</span> is the time. However, in practice it makes more sense to break up <span class="math inline">\(f\)</span> into <span class="math inline">\(f_1(X,Y)* f_2(t)\)</span> by assuming the indepence of the temporal and spatial component, making parameter estimation a lot easier (reducing dimension a lot).</p>
+</div>
+</div>
+<div id="how-to-win-friends-and-influence-functions" class="section level1">
+<h1>3 How to Win Friends and Influence Functions</h1>
+<div id="a-2" class="section level2">
+<h2>(a)</h2>
+<p>Show by definition: <span class="math display">\[ L(x) =\lim_{\epsilon \to 0} \frac{T((1-\epsilon)F + \epsilon \delta_x) - T(F)}{\epsilon}  \ (*)\]</span> Let <span class="math inline">\(z = T((1-\epsilon)F + \epsilon \delta_x) \ (**)\)</span>. Then we have <span class="math inline">\((1-\epsilon)F(z) + \epsilon \delta_x(z) = p\)</span> (1)\</p>
+<p>If <span class="math inline">\(x \leq \theta\)</span>, then we have <span class="math inline">\(z \geq x\)</span> as otherwise <span class="math inline">\((1-\epsilon)F(z) + \epsilon \delta_x(z) = (1-\epsilon)F(z) &lt; (1-\epsilon)F(x) &lt; p\)</span>. Then we have <span class="math inline">\((1-\epsilon)F(z) + \epsilon = p\)</span>. Thus <span class="math inline">\(z = F^{-1}(\frac{p-\epsilon}{1-\epsilon}) = F^{-1}(p+\Delta)\)</span>, where <span class="math inline">\(\Delta := \frac{\epsilon(p-1)}{1-\epsilon}\)</span>. Thus <span class="math inline">\((*)\)</span> becomes: <span class="math display">\[ L(x) = \lim_{\epsilon \to 0} \frac{F^{-1}(p+\Delta) - F^{-1}(p)}{\Delta} \frac{\Delta}{\epsilon} = [F^{-1}(p)]^{&#39;}  \lim_{\epsilon \to 0} \frac{\Delta}{\epsilon}  = \frac{p-1}{f(\theta)}  \]</span></p>
+<p>If <span class="math inline">\(x &gt; \theta\)</span>, then we have <span class="math inline">\(z &lt; x\)</span>, as otherwise as <span class="math inline">\(\epsilon\)</span> goes to <span class="math inline">\(0\)</span>, <span class="math inline">\(\text{LHS} &gt; RHS\)</span> in <span class="math inline">\((**)\)</span>. Then we have <span class="math inline">\((1-\epsilon)F(z) = p\)</span>. Thus <span class="math inline">\(z = F^{-1}(\frac{p}{1-\epsilon}) = F^{-1}(p+\Delta)\)</span>, where <span class="math inline">\(\Delta := \frac{\epsilon p}{1-\epsilon}\)</span>. Thus <span class="math inline">\((*)\)</span> becomes: <span class="math display">\[ L(x) = \lim_{\epsilon \to 0} \frac{F^{-1}(p+\Delta) - F^{-1}(p)}{\Delta} \frac{\Delta}{\epsilon} = [F^{-1}(p)]^{&#39;}  \lim_{\epsilon \to 0} \frac{\Delta}{\epsilon}  = \frac{p}{f(\theta)}  \]</span></p>
+</div>
+<div id="b-2" class="section level2">
+<h2>(b)</h2>
+<p>By plugging the empirical cdf we have <span class="math inline">\(\hat{\theta} = T(\hat{F}_n) = \hat{F}_n^{-1} (p)\)</span>. Thus <span class="math inline">\(p = \hat{F}_n(\hat{\theta}) = \frac{1}{n} \sum_{i = 1}^n \mathcal{I}_{(-\infty, \hat{\theta})}(x_i)\)</span>. Therefore <span class="math inline">\(\hat{\theta}\)</span> should be the number s.t the following holds <span class="math inline">\(p = \frac{|\{i \in 1:n : X_i \leq \hat{\theta} \}|}{n}\)</span>. Of course, since the LHS is descrete w.r.t <span class="math inline">\(\hat{\theta}\)</span>, and we cannot find solution for some <span class="math inline">\(p\)</span>. Then we find <span class="math inline">\(\hat{\theta}\)</span> s.t LHS is closest to p.\</p>
+<p>By our formula <span class="math display">\[ se = \frac{\tau}{\sqrt(n)}; \text{and} \ \tau^2 = \int L^2(x) dF\]</span> We can apply our formula in (a) to get <span class="math inline">\(\tau\)</span> as below: <span class="math display">\[  \tau^2 = \int L^2(x) dF =  \int_{x \leq \theta} L^2(x) dF + \int_{x &gt; \theta} L^2(x) dF = (\frac{1-p}{f(\theta)})^2p + (\frac{p}{f(\theta)})^2(1-p) = \frac{(p-1)p(2p-1)}{f^2(\theta)}   \]</span></p>
+<p>Therefore <span class="math inline">\(\hat{\tau}^2 = \frac{(p-1)p(2p-1)}{\hat{f}_n^2(\hat{\theta})}\)</span>. Thus <span class="math inline">\(\hat{se} = \frac{\hat{\tau}}{\sqrt(n)} = (\frac{(p-1)p(2p-1)}{\hat{f}_n^2(\hat{\theta}) n})^{\frac{1}{2}}\)</span></p>
+</div>
+<div id="c-1" class="section level2">
+<h2>(c)</h2>
+<p>By Nonparametric Delta Method, we have the <span class="math inline">\(1-\alpha\)</span> CI for <span class="math inline">\(\theta\)</span> as <span class="math inline">\(\hat{\theta} \pm Z_{\alpha/2} \hat{se}\)</span> and plug in our estimated <span class="math inline">\(\hat{\theta}, \hat{se}\)</span></p>
+</div>
+<div id="d" class="section level2">
+<h2>(d)</h2>
+<ul>
+<li>STEP 1: Draw <span class="math inline">\(X_1^*,...,X_n^* \sim \hat{F}_n\)</span> (equivalent to sampling from <span class="math inline">\(X_1, ..., X_n\)</span> with replacement); find <span class="math inline">\(\hat{\theta}\)</span> using formula in (b)<br />
+</li>
+<li>STEP 2: Repeat STEP 1 B times and we obtain <span class="math inline">\(\theta_1^*,...,\theta_B^*\)</span><br />
+</li>
+<li>STEP 3: Estimate the <span class="math inline">\(se\)</span> by <span class="math inline">\(\hat{se} = \sqrt{\frac{1}{B} \sum_{j=1}^B (\theta_j^* - \bar{\theta})^2 }\)</span>, where <span class="math inline">\(\bar{\theta} = \frac{1}{B} \sum_{j=1}^B \theta_j^*\)</span></li>
+</ul>
+</div>
+</div>
 <div id="pulling-yourself-up-by-the-bootstrap" class="section level1">
 <h1>4 Pulling Yourself Up by the Bootstrap</h1>
 <pre class="r"><code>B = 1000 ## number of bootstrap replicates
-n_exper = 500 ## number of experiments
+n_exper = 100 ## number of experiments
 alpha = 0.05 ## (1-alpha) confidence interval</code></pre>
-<div id="a" class="section level2">
+<div id="a-3" class="section level2">
 <h2>(a)</h2>
 <pre class="r"><code>## generate data from Y = (1,X, X^2) * beta + e
 n = 100
@@ -403,10 +812,16 @@ beta = c(-1,2,-1)
 X = runif(n,0,2)
 X_expand = cbind(X^0, X, X^2)
 e = rnorm(n,0,0.2^2)
-Y = X_expand %*% beta + e</code></pre>
-<pre class="r"><code>estimate_theta1 &lt;- function(X,Y, seed){
+Y = X_expand %*% beta + e
+
+## the god-chosen theta
+true_theta = 1
+
+## functions
+estimate_theta1 &lt;- function(X,Y, seed){
   set.seed(seed)
-  idx = sample(1:n, B, replace = TRUE)
+  n = length(X)
+  idx = sample(1:n, n, replace = TRUE)
   X_sampled = X[idx]
   Y_sampled = Y[idx]
   
@@ -416,18 +831,26 @@ Y = X_expand %*% beta + e</code></pre>
   return(theta)
 }
 
-## experiments
-seeds = 1:n_exper
-theta_em = sapply(seeds, function(seed) estimate_theta1(X,Y,seed))
+bootstrap_theta1 &lt;- function(X,Y,B,alpha,true_theta,seed){
+  seeds = (1:B) * seed
+  theta_em = sapply(seeds, function(seed) estimate_theta1(X,Y,seed))
+  myquantile = quantile(theta_em, probs = c(alpha,1-alpha))
+  coverage = 0
+  if(true_theta &gt;= myquantile[[1]] &amp;&amp; true_theta &lt;= myquantile[[2]]) coverage = 1
+  return(coverage)
+}
 
-## find (1-alpha) CI
-plot(density(theta_em))</code></pre>
-<p><img src="figure/hw2.Rmd/unnamed-chunk-4-1.png" width="672" style="display: block; margin: auto;" /></p>
-<pre class="r"><code>print(quantile(theta_em, probs = c(alpha,1-alpha)))</code></pre>
-<pre><code>       5%       95% 
-0.9951499 0.9990307 </code></pre>
+## experiments
+start = proc.time()
+seeds = 1:n_exper
+# coverage1 = sapply(seeds, function(seed) bootstrap_theta1(X,Y,B,alpha, true_theta,seed))
+# print(paste0(&quot;finish after &quot;, proc.time() - start))
+# saveRDS(coverage1,&quot;../data/hw2/coverage1.rds&quot;)
+coverage1 = readRDS(&quot;../data/hw2/coverage1.rds&quot;)
+print(paste0(&quot;coverage rate is &quot;, mean(coverage1)))</code></pre>
+<pre><code>[1] &quot;coverage rate is 1&quot;</code></pre>
 </div>
-<div id="b" class="section level2">
+<div id="b-3" class="section level2">
 <h2>(b)</h2>
 <pre class="r"><code>## generate data from X = 10Z + e, Y = 10Z + delta
 n = 100
@@ -437,9 +860,14 @@ Z = rnorm(n,0,1)
 X = 10 * Z + e
 Y = 10 * Z + delta
 
+## the god-chosen theta
+true_theta = 0
+
+## functions
 estimate_theta2 &lt;- function(X,Y,Z, seed){
+  n = length(X)
   set.seed(seed)
-  idx = sample(1:n, B, replace = TRUE)
+  idx = sample(1:n, n, replace = TRUE)
   X_sampled = X[idx]
   Y_sampled = Y[idx]
   Z_sampled = Z[idx]
@@ -451,20 +879,27 @@ estimate_theta2 &lt;- function(X,Y,Z, seed){
   return(theta_hat)
 }
 
+bootstrap_theta2 &lt;- function(X,Y,Z,B,alpha,true_theta,seed){
+  seeds = (1:B) * seed
+  theta_em = sapply(seeds, function(seed) estimate_theta2(X,Y,Z,seed))
+  myquantile = quantile(theta_em, probs = c(alpha,1-alpha))
+  coverage = 0
+  if(true_theta &gt;= myquantile[[1]] &amp;&amp; true_theta &lt;= myquantile[[2]]) coverage = 1
+  return(coverage)
+}
+
 ## experiments
 seeds = 1:n_exper
-theta_em2 = sapply(seeds, function(seed) estimate_theta2(X,Y,Z,seed))
-
-## find (1-alpha) CI
-plot(density(theta_em2))</code></pre>
-<p><img src="figure/hw2.Rmd/unnamed-chunk-5-1.png" width="672" style="display: block; margin: auto;" /></p>
-<pre class="r"><code>print(quantile(theta_em2, probs = c(alpha,1-alpha)))</code></pre>
-<pre><code>         5%         95% 
--0.03045795  0.04870270 </code></pre>
+# coverage2 = sapply(seeds, function(seed) bootstrap_theta2(X,Y,Z,B,alpha, true_theta,seed))
+# saveRDS(coverage2,&quot;../data/hw2/coverage2.rds&quot;)
+coverage2 = readRDS(&quot;../data/hw2/coverage2.rds&quot;)
+print(paste0(&quot;coverage rate is &quot;, mean(coverage2)))</code></pre>
+<pre><code>[1] &quot;coverage rate is 1&quot;</code></pre>
 </div>
-<div id="c" class="section level2">
+<div id="c-2" class="section level2">
 <h2>(c)</h2>
-<pre class="r"><code>n = 100
+<pre class="r"><code>## generate data
+n = 100
 p = 10
 Sigma = diag(p)
 generateX3 &lt;- function(p){
@@ -472,96 +907,380 @@ generateX3 &lt;- function(p){
 }
 X = t(replicate(n,generateX3(p)))
 
+## the god-chosen theta
+true_theta = 1
+
+## functions
 estimate_theta3 &lt;- function(X,seed){
+  n = nrow(X)
   set.seed(seed)
-  idx = sample(1:n, B, replace = TRUE)
+  idx = sample(1:n, n, replace = TRUE)
   X_sampled = X[idx,]
   Sigma = cov(X_sampled)
   theta_hat = tail(svd(Sigma)$d,1)
   return(theta_hat)
 }
 
+bootstrap_theta3 &lt;- function(X,B,alpha,true_theta,seed){
+  seeds = (1:B) * seed
+  theta_em = sapply(seeds, function(seed) estimate_theta3(X,seed))
+  myquantile = quantile(theta_em, probs = c(alpha,1-alpha))
+  coverage = 0
+  if(true_theta &gt;= myquantile[[1]] &amp;&amp; true_theta &lt;= myquantile[[2]]) coverage = 1
+  return(coverage)
+}
+
 ## experiments
 seeds = 1:n_exper
-theta_em3 = sapply(seeds, function(seed) estimate_theta3(X,seed))
-
-## find (1-alpha) CI
-plot(density(theta_em3))</code></pre>
-<p><img src="figure/hw2.Rmd/unnamed-chunk-6-1.png" width="672" style="display: block; margin: auto;" /></p>
-<pre class="r"><code>print(quantile(theta_em3, probs = c(alpha,1-alpha)))</code></pre>
-<pre><code>       5%       95% 
-0.4583757 0.5155941 </code></pre>
+# coverage3 = sapply(seeds, function(seed) bootstrap_theta3(X,B,alpha, true_theta,seed))
+# saveRDS(coverage3,&quot;../data/hw2/coverage3.rds&quot;)
+coverage3 = readRDS(&quot;../data/hw2/coverage3.rds&quot;)
+print(paste0(&quot;coverage rate is &quot;, mean(coverage3)))</code></pre>
+<pre><code>[1] &quot;coverage rate is 0&quot;</code></pre>
 </div>
 </div>
-<div id="section" class="section level1">
-<h1>5</h1>
-<div id="a-1" class="section level2">
+<div id="enjoying-the-dirichlet-process" class="section level1">
+<h1>5 Enjoying the (Dirichlet) Process</h1>
+<div id="a-4" class="section level2">
 <h2>(a)</h2>
-<p>Use the notation as in the lecture.<br />
-Show by induction. Let <span class="math inline">\(P_k := \sum_{j = k}^\infty w_k\)</span>. We want to show that $P_k = _{j = 1}^k (1-_J) $ with probability 1.<br />
-When <span class="math inline">\(k = 1\)</span>, of course <span class="math inline">\(P_1 = 1-\gamma_1\)</span> with probability 1.<br />
-Now assume the case for <span class="math inline">\(k\)</span> is right, prove the case for <span class="math inline">\(k+1\)</span> as below:<br />
-With probability 1 we have: <span class="math display">\[ P_{k+1} = P_k - w_k  = \Pi_{j = 1}^k (1-\gamma_j) - \gamma_k \Pi_{i = 1}^{k-1}(1-\gamma_i) = \Pi_{j = 1}^{k+1} (1-\gamma_j)\]</span></p>
+<p>We can observe the following. With probability 1, <span class="math display">\[\sum_{i=1}^{+\infty} w_i = 1 \iff \lim_{n \to +\infty} (1-\sum_{i=1}^n w_i)=0 \iff \lim_{n \to +\infty}=0 \Pi_{i=1}^n (1-v_i) \iff \lim_{n \to +\infty} \sum_{i=1}^n log(1-v_i) = -\infty \longleftarrow \sum_{i=1}^n v_i = +\infty       \]</span> (The last <span class="math inline">\(\longleftarrow\)</span> relation can be shown by observing that <span class="math inline">\(\log(1-v_i) &lt; - v_i\)</span>)<br />
+Therefore it suffices to show <span class="math inline">\(\sum_{i=1}^n v_i = +\infty\)</span> with probability 1. Denote <span class="math inline">\(T_n := \sum_{i = 1}^n v_i\)</span>. By Law of Large Number, we have <span class="math inline">\(\forall \epsilon &gt; 0, \  \lim_{n \to +\infty} \Pr(|\bar{T_n} -E(v_i)| &gt; \epsilon) = 0\)</span>. Therefore with probability 1, <span class="math inline">\(T_n &gt; n(\epsilon + E(v_i)) = n(\epsilon + \frac{1}{1+\alpha}) \to + \infty\)</span>. Thus the claim follows.</p>
 </div>
-<div id="b-1" class="section level2">
+<div id="b-4" class="section level2">
 <h2>(b)</h2>
+<p>After failing to compute the variance by brute force, I use the fact: For any partition of R <span class="math inline">\(B_1, ...B_n\)</span>, <span class="math display">\[\mu_F(B_1),...,\mu_F(B_n) \sim Dir(\alpha\mu_{F_0}(B_1),...,\alpha\mu_{F_0}(B_n))\]</span> Choose <span class="math inline">\(A := (-\infty, x); \ B:= [x,+\infty)\)</span> as a partion of R. We have: <span class="math display">\[\mu_F(A),\mu_F(B) \sim Dir(\alpha\mu_{F_0}(A),\alpha\mu_{F_0}(B)) \longrightarrow F(x), 1-F(x) \sim Dir(\alpha F_0(x), \alpha (1-F_0(x))) \longrightarrow F(x) \sim Beta(\alpha F_0(x), \alpha (1-F_0(x))) \]</span> Therefore by using the formula for the expectation and variance of beta distribution, we have: <span class="math inline">\(E(F(x)) = F_0(x)\)</span> and <span class="math inline">\(Var(F(x)) = \frac{F_0(x)(1-F_0(x))}{\alpha +1 }\)</span>. Therefore our proposition is obviously correct.</p>
 </div>
-<div id="c-1" class="section level2">
+<div id="c-3" class="section level2">
 <h2>(c)</h2>
+<p>Since <span class="math display">\[ |\bar{F_n} (x) - F(x)| \leq |\bar{F_n}(x) -F_n(x) + F_n(x) - F(x)| \leq |\bar{F_n}(x) -F_n(x)| + |F_n(x) - F(x)| \leq \frac{\alpha}{n+\alpha} + |F_n(x) - F(x)|\]</span></p>
+<p>we can apply DWK and have the following bound: <span class="math display">\[ \Pr(sup_{x} |\bar{F}_n (x) - F(x)| &gt; \epsilon) \leq \Pr(sup_x |F_n(x) - F(x)| &gt; \epsilon - \frac{\alpha}{n+\alpha}) \leq e^{-2n(\epsilon - \frac{\alpha}{n+\alpha})^2}   \]</span></p>
 </div>
-<div id="d" class="section level2">
+<div id="d-1" class="section level2">
 <h2>(d)</h2>
-<pre class="r"><code>dp_normal &lt;- function(N=1000,alpha){
-  G_0 &lt;- function(N) rnorm(N, 0, 1)
-  s = G_0(N)
-  gamma = rbeta(N,1,alpha)
-  w = numeric(N)
-  w[1] = gamma[1]
-  w[2:N] = sapply(2:N, function(i) gamma[i] * prod(1-gamma[1:(i-1)]))
+<pre class="r"><code>## reference: code from instructor
+stickbreak = function(alpha,N){
+##### draw w_1,w_2, ..., w_N from stick break dist&#39;n
+  V = rbeta(N,1,alpha)
+  w = V
+  d = 1
+  for(i in 2:N) {
+    d = d*(1-V[i-1])
+    w[i] = V[i]*d
+  }
+  return(w/sum(w))
+}
+
+PriorSampleDir = function(alpha,mu=0,sigma=1){
+### draw F ~ DP(alpha,F0) where F0 = N(mu,sigma)
+  N = 1000
+  s = rnorm(N,mu,sigma) ## location, from F0 = N(mu,sigma)
+  w = stickbreak(alpha,N) ## weight, from stickbreaking process
   
-  dp_samples = sample(s,prob = w, replace = TRUE)
-  return(plot(density(dp_samples), main = paste0(&quot;alpha = &quot;, alpha)))
-}</code></pre>
-<pre class="r"><code>par(mfrow=c(2,2))
-dp_normal(alpha = 0.1)
-dp_normal(alpha = 1)
-dp_normal(alpha = 100)
-dp_normal(alpha = 10000)</code></pre>
-<p><img src="figure/hw2.Rmd/unnamed-chunk-8-1.png" width="672" style="display: block; margin: auto;" /></p>
+  par(mfrow=c(1,2))
+  # plot(s,w,type=&quot;h&quot;,xlab=&quot;&quot;,ylab=&quot;weights&quot;,yaxt=&quot;n&quot;)
+  plot(s,w,type=&quot;h&quot;,xlab=&quot;&quot;,ylab=&quot;weights&quot;)
+  o = order(s)
+  s = s[o]
+  w = w[o]
+  F = cumsum(w)
+  plot(s,F,type=&quot;s&quot;,xlab=&quot;&quot;,ylab=&quot;F&quot;,lwd=2)
+  lines(s,pnorm(s,mean=mu,sd=sigma),lwd=2,col=&quot;green&quot;)
+  title(main = paste0(&quot;alpha = &quot;, alpha))
+}
+
+# par(mfrow = c(3,1))
+# PriorSampleDir(alpha = 1)
+# PriorSampleDir(alpha = 10)
+# PriorSampleDir(alpha = 100)
+
+
+par(mfrow = c(10,1))
+replicate(10,PriorSampleDir(alpha = 1))</code></pre>
+<p><img src="figure/hw2.Rmd/unnamed-chunk-24-1.png" width="672" style="display: block; margin: auto;" /><img src="figure/hw2.Rmd/unnamed-chunk-24-2.png" width="672" style="display: block; margin: auto;" /><img src="figure/hw2.Rmd/unnamed-chunk-24-3.png" width="672" style="display: block; margin: auto;" /><img src="figure/hw2.Rmd/unnamed-chunk-24-4.png" width="672" style="display: block; margin: auto;" /><img src="figure/hw2.Rmd/unnamed-chunk-24-5.png" width="672" style="display: block; margin: auto;" /><img src="figure/hw2.Rmd/unnamed-chunk-24-6.png" width="672" style="display: block; margin: auto;" /><img src="figure/hw2.Rmd/unnamed-chunk-24-7.png" width="672" style="display: block; margin: auto;" /><img src="figure/hw2.Rmd/unnamed-chunk-24-8.png" width="672" style="display: block; margin: auto;" /><img src="figure/hw2.Rmd/unnamed-chunk-24-9.png" width="672" style="display: block; margin: auto;" /><img src="figure/hw2.Rmd/unnamed-chunk-24-10.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>[[1]]
+NULL
+
+[[2]]
+NULL
+
+[[3]]
+NULL
+
+[[4]]
+NULL
+
+[[5]]
+NULL
+
+[[6]]
+NULL
+
+[[7]]
+NULL
+
+[[8]]
+NULL
+
+[[9]]
+NULL
+
+[[10]]
+NULL</code></pre>
+<pre class="r"><code>par(mfrow = c(10,1))
+replicate(10,PriorSampleDir(alpha = 10))</code></pre>
+<p><img src="figure/hw2.Rmd/unnamed-chunk-24-11.png" width="672" style="display: block; margin: auto;" /><img src="figure/hw2.Rmd/unnamed-chunk-24-12.png" width="672" style="display: block; margin: auto;" /><img src="figure/hw2.Rmd/unnamed-chunk-24-13.png" width="672" style="display: block; margin: auto;" /><img src="figure/hw2.Rmd/unnamed-chunk-24-14.png" width="672" style="display: block; margin: auto;" /><img src="figure/hw2.Rmd/unnamed-chunk-24-15.png" width="672" style="display: block; margin: auto;" /><img src="figure/hw2.Rmd/unnamed-chunk-24-16.png" width="672" style="display: block; margin: auto;" /><img src="figure/hw2.Rmd/unnamed-chunk-24-17.png" width="672" style="display: block; margin: auto;" /><img src="figure/hw2.Rmd/unnamed-chunk-24-18.png" width="672" style="display: block; margin: auto;" /><img src="figure/hw2.Rmd/unnamed-chunk-24-19.png" width="672" style="display: block; margin: auto;" /><img src="figure/hw2.Rmd/unnamed-chunk-24-20.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>[[1]]
+NULL
+
+[[2]]
+NULL
+
+[[3]]
+NULL
+
+[[4]]
+NULL
+
+[[5]]
+NULL
+
+[[6]]
+NULL
+
+[[7]]
+NULL
+
+[[8]]
+NULL
+
+[[9]]
+NULL
+
+[[10]]
+NULL</code></pre>
+<pre class="r"><code>par(mfrow = c(10,1))
+replicate(10,PriorSampleDir(alpha = 100))</code></pre>
+<p><img src="figure/hw2.Rmd/unnamed-chunk-24-21.png" width="672" style="display: block; margin: auto;" /><img src="figure/hw2.Rmd/unnamed-chunk-24-22.png" width="672" style="display: block; margin: auto;" /><img src="figure/hw2.Rmd/unnamed-chunk-24-23.png" width="672" style="display: block; margin: auto;" /><img src="figure/hw2.Rmd/unnamed-chunk-24-24.png" width="672" style="display: block; margin: auto;" /><img src="figure/hw2.Rmd/unnamed-chunk-24-25.png" width="672" style="display: block; margin: auto;" /><img src="figure/hw2.Rmd/unnamed-chunk-24-26.png" width="672" style="display: block; margin: auto;" /><img src="figure/hw2.Rmd/unnamed-chunk-24-27.png" width="672" style="display: block; margin: auto;" /><img src="figure/hw2.Rmd/unnamed-chunk-24-28.png" width="672" style="display: block; margin: auto;" /><img src="figure/hw2.Rmd/unnamed-chunk-24-29.png" width="672" style="display: block; margin: auto;" /><img src="figure/hw2.Rmd/unnamed-chunk-24-30.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>[[1]]
+NULL
+
+[[2]]
+NULL
+
+[[3]]
+NULL
+
+[[4]]
+NULL
+
+[[5]]
+NULL
+
+[[6]]
+NULL
+
+[[7]]
+NULL
+
+[[8]]
+NULL
+
+[[9]]
+NULL
+
+[[10]]
+NULL</code></pre>
+<div id="comment-3" class="section level3">
+<h3>Comment:</h3>
+<p>As <span class="math inline">\(\alpha\)</span> gets larger, the distribution drawn from DP are more “continuous”, and more concentrated around <span class="math inline">\(F_O\)</span></p>
+</div>
 </div>
 <div id="e" class="section level2">
 <h2>(e)</h2>
-<div id="section-1" class="section level3">
+<div id="section" class="section level3">
 <h3>1</h3>
-<p>Empirical cdf can just by computed using formula.<br />
-BY DKW, <span class="math display">\[  \Pr(sup_{x \in R } |F_n(x) = F(x)| &gt; \epsilon)  &lt; 2e^{-2n\epsilon^2} \]</span></p>
-<p>Let <span class="math inline">\(\alpha = 2e^{-2n\epsilon^2}\)</span>, we have <span class="math inline">\(\epsilon = (\frac{1}{2n} log(2/\alpha))^{1/2}\)</span> and that <span class="math inline">\([F_n(x)-\epsilon,F_n(x)+\epsilon]\)</span> is our <span class="math inline">\(1-\alpha\)</span> confidence band.</p>
-<pre class="r"><code>n = 10
+<pre class="r"><code>set.seed(12345)
+n1 = 10
+n2 = 25
+n3 = 100
+mu_true = 5
+sigma_true = sqrt(3)
 
-emcdf_cb &lt;- function(n){
-  F = function(n) rnorm(n,0,1)
-  X = F(n)
-  ## empirical cdf
-  empirical_CDF &lt;- function(x,X){
-    n = length(X)
-    return(length(X[X &lt; x])/n)
-  } 
-  
-  xs = seq(-3,3,0.1)
+X1 = rnorm(n1,mu_true,sigma_true) 
+X2 = rnorm(n2,mu_true,sigma_true) 
+X3 = rnorm(n3,mu_true,sigma_true) 
+
+
+empirical_CDF &lt;- function(x,X){
+  n = length(X)
+  return(length(X[X &lt; x])/n)
+}
+
+emcdf_cb &lt;- function(X){
+  n = length(X)
+  xs = seq(-10,10,length = 100)
   em_cdf = sapply(xs, function(x) empirical_CDF(x,X))
-  cb_width = sqrt(1/(2*n) * log(2/0.05))
-  
+  cb_width = sqrt(log(2/0.05)/(2*n))
+
   plot(xs, em_cdf, type = &quot;l&quot;, main = paste0(&quot;n = &quot;, n))
   lines(xs, em_cdf + cb_width, col = &quot;red&quot;)
   lines(xs, em_cdf - cb_width, &quot;col&quot; = &quot;green&quot;)
+}
+
+#par(mfrow=c(3,1))
+emcdf_cb(X1)</code></pre>
+<p><img src="figure/hw2.Rmd/unnamed-chunk-25-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>emcdf_cb(X2)</code></pre>
+<p><img src="figure/hw2.Rmd/unnamed-chunk-25-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>emcdf_cb(X3)</code></pre>
+<p><img src="figure/hw2.Rmd/unnamed-chunk-25-3.png" width="672" style="display: block; margin: auto;" /></p>
+<div id="comment-4" class="section level4">
+<h4>Comment:</h4>
+<p>When n is too small, the confidence band is too large to be seen in the plot As n (the number of samples) gets larger, the empirical cdf gets smoother, with confidence band width smaller.</p>
+</div>
+</div>
+<div id="section-1" class="section level3">
+<h3>2</h3>
+<pre class="r"><code>PosteriorSampleDir = function(x,alpha=100,mu=0,sigma=1,mu_true = 5, sigma_true = sqrt(3),M=10){
+### draw M samples F ~ posterior
+  ## x is the observed data
+  ## first draw F ~ DP(alpha + n, Fbar)
+
+  ## plot Fbar
+  n = length(x)
+  N = 100
+  # F = matrix(0,N,M)
+  # print(dim(F))
+  grid = seq(-5,10,length=100)
+  grid = c(x,grid)
+  grid = sort(grid)
+  ng   = length(grid)
+  F = rep(0,ng)
+  for(i in 1:ng){
+    F[i] = (n/(alpha+n))*mean(x &lt;= grid[i]) + (alpha/(alpha+n))*pnorm(grid[i],mu,sigma)
+    ## the posterior F is a combination of empirical cdf and prior
+  }
+  Fbar = F
+  plot(grid,Fbar,type=&quot;l&quot;,lwd=3,col=&quot;blue&quot;,xlab=&quot;&quot;,ylab=&quot;F&quot;, main = paste0(&quot;alpha = &quot;, alpha))
+  
+  newdata &lt;- vector()
+  for(i in 1:M){
+    ## draw z using Chinese restaurant process
+    z = rnorm(N,mu,sigma)
+    u = rbinom(N,1,n/(alpha+n))
+    y = sample(x,size=N,replace=TRUE)
+    z[u==1] = y[u==1]
+    newdata = rbind(newdata,z)
+    
+    s = z
+    ## draw weights from stickbreaking process
+    w = stickbreak(alpha+n,N)
+    ## get sample F
+    o = order(s)
+    s = s[o]
+    w = w[o]
+    F = cumsum(w)
+    lines(s,F,type=&quot;s&quot;)
+  }
+ 
+  emcdfs &lt;- vector()
+  for(i in 1:M){
+    emcdfs = rbind(emcdfs,sapply(grid, function(x) empirical_CDF(x,newdata[i,])))
+  }
+   
+  qt = apply(emcdfs,2,function(x) quantile(x,c(0.05,0.95)))
+  lines(grid, qt[1,], col = &quot;green&quot;, lwd = 1)
+  lines(grid, qt[2,], col = &quot;green&quot;, lwd = 1)
+
+  ## draw true cdf 
+  lines(grid,pnorm(grid,mu_true,sigma_true),lwd=3,col=&quot;red&quot;)
 }</code></pre>
-<pre class="r"><code>par(mfrow=c(3,1))
-emcdf_cb(10)
-emcdf_cb(25)
-emcdf_cb(100)</code></pre>
-<p><img src="figure/hw2.Rmd/unnamed-chunk-10-1.png" width="672" style="display: block; margin: auto;" /> #### Comment: As n (the number of samples) gets larger, the empirical cdf gets smoother, with confidence band width smaller.</p>
+<pre class="r"><code>data = X1
+PosteriorSampleDir(x=data, alpha = 1)</code></pre>
+<p><img src="figure/hw2.Rmd/unnamed-chunk-27-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>PosteriorSampleDir(x=data, alpha = 10)</code></pre>
+<p><img src="figure/hw2.Rmd/unnamed-chunk-27-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>PosteriorSampleDir(x=data, alpha = 100)</code></pre>
+<p><img src="figure/hw2.Rmd/unnamed-chunk-27-3.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>data = X2
+PosteriorSampleDir(x=data, alpha = 1)</code></pre>
+<p><img src="figure/hw2.Rmd/unnamed-chunk-28-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>PosteriorSampleDir(x=data, alpha = 10)</code></pre>
+<p><img src="figure/hw2.Rmd/unnamed-chunk-28-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>PosteriorSampleDir(x=data, alpha = 100)</code></pre>
+<p><img src="figure/hw2.Rmd/unnamed-chunk-28-3.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>data = X3
+PosteriorSampleDir(x=data, alpha = 1)</code></pre>
+<p><img src="figure/hw2.Rmd/unnamed-chunk-29-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>PosteriorSampleDir(x=data, alpha = 10)</code></pre>
+<p><img src="figure/hw2.Rmd/unnamed-chunk-29-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>PosteriorSampleDir(x=data, alpha = 100)</code></pre>
+<p><img src="figure/hw2.Rmd/unnamed-chunk-29-3.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>PosteriorSampleDir_dry = function(x,alpha=100,mu=0,sigma=1,mu_true = 5, sigma_true = sqrt(3),M=10){
+  n = length(x)
+  N = 100
+  
+  grid = seq(-5,10,length=100)
+  grid = c(x,grid)
+  grid = sort(grid)
+  
+  newdata &lt;- vector()
+  for(i in 1:M){
+    ## draw z using Chinese restaurant process
+    z = rnorm(N,mu,sigma)
+    u = rbinom(N,1,n/(alpha+n))
+    y = sample(x,size=N,replace=TRUE)
+    z[u==1] = y[u==1]
+    newdata = rbind(newdata,z)
+    
+    s = z
+    ## draw weights from stickbreaking process
+    w = stickbreak(alpha+n,N)
+    ## get sample F
+    o = order(s)
+    s = s[o]
+    w = w[o]
+    F = cumsum(w)
+  }
+ 
+  emcdfs &lt;- vector()
+  for(i in 1:M){
+    emcdfs = rbind(emcdfs,sapply(grid, function(x) empirical_CDF(x,newdata[i,])))
+  }
+   
+  qt = apply(emcdfs,2,function(x) quantile(x,c(0.05,0.95)))
+  
+  truth = pnorm(grid,mu_true,sigma_true)
+  
+  out = 0
+  if(all(truth &gt; qt[1,] &amp;&amp; truth &lt; qt[2,])) out = 1
+  return(out)
+}</code></pre>
+<pre class="r"><code>data = X1
+num_exper = 100
+result = replicate(num_exper, PosteriorSampleDir_dry(data))
+print(paste0(&quot;Fraction of times Bayes Confidence Band Contains True Distribution: &quot;, mean(result)))</code></pre>
+<pre><code>[1] &quot;Fraction of times Bayes Confidence Band Contains True Distribution: 0&quot;</code></pre>
+<pre class="r"><code>data = X2
+num_exper = 100
+result = replicate(num_exper, PosteriorSampleDir_dry(data))
+print(paste0(&quot;Fraction of times Bayes Confidence Band Contains True Distribution: &quot;, mean(result)))</code></pre>
+<pre><code>[1] &quot;Fraction of times Bayes Confidence Band Contains True Distribution: 0&quot;</code></pre>
+<pre class="r"><code>data = X3
+num_exper = 100
+result = replicate(num_exper, PosteriorSampleDir_dry(data))
+print(paste0(&quot;Fraction of times Bayes Confidence Band Contains True Distribution: &quot;, mean(result)))</code></pre>
+<pre><code>[1] &quot;Fraction of times Bayes Confidence Band Contains True Distribution: 0&quot;</code></pre>
+<div id="comment-5" class="section level4">
+<h4>Comment</h4>
+<p>It means the Bayesian Confidence Bands are pointwise interval for each x.</p>
 </div>
 </div>
+</div>
+</div>
+<div id="reference" class="section level1">
+<h1>Reference</h1>
+<p>I discussed problems with Chen Xu; I use some of code distributed by the instructor.</p>
 <div id="session-information" class="section level2">
 <h2>Session information</h2>
 <pre class="r"><code>sessionInfo()</code></pre>
@@ -577,15 +1296,16 @@ locale:
 [1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
 
 attached base packages:
-[1] splines   stats     graphics  grDevices utils     datasets  methods  
-[8] base     
+[1] grid      splines   stats     graphics  grDevices utils     datasets 
+[8] methods   base     
 
 other attached packages:
- [1] forcats_0.3.0   stringr_1.3.1   dplyr_0.7.4     purrr_0.2.5    
- [5] readr_1.1.1     tidyr_0.8.1     tibble_1.4.2    ggplot2_2.2.1  
- [9] tidyverse_1.2.1 mvtnorm_1.0-8   MASS_7.3-50     gam_1.16       
-[13] foreach_1.4.4   reshape_0.8.7   gridExtra_2.3   locfit_1.5-9.1 
-[17] kedd_1.0.3     
+ [1] fields_9.6      maps_3.3.0      spam_2.2-0      dotCall64_1.0-0
+ [5] forcats_0.3.0   stringr_1.3.1   dplyr_0.7.4     purrr_0.2.5    
+ [9] readr_1.1.1     tidyr_0.8.1     tibble_1.4.2    ggplot2_2.2.1  
+[13] tidyverse_1.2.1 mvtnorm_1.0-8   MASS_7.3-50     gam_1.16       
+[17] foreach_1.4.4   reshape_0.8.7   gridExtra_2.3   locfit_1.5-9.1 
+[21] kedd_1.0.3     
 
 loaded via a namespace (and not attached):
  [1] Rcpp_0.12.16      lubridate_1.7.4   lattice_0.20-35  
@@ -599,14 +1319,14 @@ loaded via a namespace (and not attached):
 [25] broom_0.4.4       compiler_3.4.3    modelr_0.1.2     
 [28] pkgconfig_2.0.1   mnormt_1.5-5      htmltools_0.3.6  
 [31] workflowr_1.0.1   codetools_0.2-15  crayon_1.3.4     
-[34] R.methodsS3_1.7.1 grid_3.4.3        nlme_3.1-137     
-[37] jsonlite_1.5      gtable_0.2.0      git2r_0.21.0     
-[40] magrittr_1.5      scales_0.5.0      cli_1.0.0        
-[43] stringi_1.2.2     reshape2_1.4.3    bindrcpp_0.2.2   
-[46] xml2_1.2.0        iterators_1.0.9   tools_3.4.3      
-[49] glue_1.2.0        hms_0.4.2         parallel_3.4.3   
-[52] yaml_2.1.19       colorspace_1.3-2  rvest_0.3.2      
-[55] knitr_1.20        bindr_0.1.1       haven_1.1.1      </code></pre>
+[34] R.methodsS3_1.7.1 nlme_3.1-137      jsonlite_1.5     
+[37] gtable_0.2.0      git2r_0.21.0      magrittr_1.5     
+[40] scales_0.5.0      cli_1.0.0         stringi_1.2.2    
+[43] reshape2_1.4.3    bindrcpp_0.2.2    xml2_1.2.0       
+[46] iterators_1.0.9   tools_3.4.3       glue_1.2.0       
+[49] hms_0.4.2         parallel_3.4.3    yaml_2.1.19      
+[52] colorspace_1.3-2  rvest_0.3.2       knitr_1.20       
+[55] bindr_0.1.1       haven_1.1.1      </code></pre>
 </div>
 </div>
 

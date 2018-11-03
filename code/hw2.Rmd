@@ -2,7 +2,7 @@
 title: "Stat374 HW2"
 author: "Zihao_Wang"
 date: "10/26/2018"
-output: html_document
+output: pdf_document
 ---
 
 ```{r}
@@ -334,7 +334,7 @@ By Nonparametric Delta Method, we have the $1-\alpha$ CI for $\theta$ as $\hat{\
 # 4 Pulling Yourself Up by the Bootstrap
 ```{r}
 B = 1000 ## number of bootstrap replicates
-n_exper = 100 ## number of experiments
+n_exper = 500 ## number of experiments
 alpha = 0.05 ## (1-alpha) confidence interval
 ```
 
