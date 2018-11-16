@@ -1,0 +1,315 @@
+---
+title: "HW3"
+author: "Zihao_Wang"
+date: "11/13/2018"
+output: html_document
+---
+
+```{r}
+rm(list=ls())
+set.seed(12345)
+options(warn = -1)
+knitr::opts_knit$set(root.dir = '~/Desktop/stat374-fall-2018/analysis/')
+suppressMessages(library(kedd))
+suppressMessages(library(fields))
+suppressMessages(library("tidyverse"))
+```
+
+# 1 Chicago Crime
+```{r}
+# crime = read.csv("../data/hw3/Crimes_-_Map.csv")
+# crime_loc = crime[,c("LATITUDE","LONGITUDE")]
+# saveRDS(crime_loc, "../data/hw3/crime_loc.rds")
+crime_loc = readRDS("../data/hw3/crime_loc.rds")
+## remove samples with NA
+crime_loc = na.omit(crime_loc)
+```
+
+
+```{r}
+set.seed(12345)
+## take a small sample of data to select the right bandwidth
+crime_loc.sub=crime_loc[sample(1:nrow(crime_loc),1000),]
+lat.sub= crime_loc.sub$LATITUDE
+long.sub = crime_loc.sub$LONGITUDE
+
+
+## Broad search for longtitude
+ucv_long = h.ucv(long.sub,lower = 0, upper = 0.05, tol = 0.0001)
+plot(ucv_long, main = "bandwidth vs ucv for long")
+# ## fine search (locate a neighborhood of the best point from broad search)
+ucv_long = h.ucv(long.sub, lower = 0.7*ucv_long$h, higher = 1.3*ucv_long$h, tol = 0.0001)
+plot(ucv_long, main = "bandwidth vs ucv for long")
+
+## Broad search for latitude
+ucv_lat = h.ucv(lat.sub,lower = 0, upper = 0.05,tol = 0.0001)
+plot(ucv_lat, main = "bandwidth vs ucv for lat")
+# ## fine search (locate a neighborhood of the best point from broad search)
+ucv_lat = h.ucv(lat.sub, lower = 0.7*ucv_lat$h, higher = 1.3*ucv_lat$h, tol = 0.0001)
+plot(ucv_lat, main = "bandwidth vs ucv for lat")
+
+plot(density(crime_loc$LONGITUDE,bw=ucv_long$h),main="Longitude Density Plot")
+plot(density(crime_loc$LATITUDE,bw=ucv_lat$h),main="Latitude Density Plot")
+
+```
+
+
+
+```{r }
+suppressMessages(library(MASS))
+## the amount of smoothing is chosen by default
+est_density = kde2d(crime_loc$LONGITUDE, crime_loc$LATITUDE, n = 100)
+image.plot(est_density, col = rainbow(1000))
+
+```
+
+
+
+
+# 2 Normal Means and Penalization
+## (a) Derive the bias-variance decomposition of the risk of $\hat{\theta}_{\lambda}$
+First, compute $\hat{\theta}_{\lambda}$:\\
+Since our objective function is:
+$$ f(\beta) := (\vec{x} - \vec{\beta})^T (\vec{x} - \vec{\beta}) + \lambda \beta ^T \beta    $$. We can compute its first and second order derivative:
+$$
+\begin{equation*}
+\begin{aligned}
+& \nabla f(\beta) = 2((\lambda+1)\vec{\beta} - \vec{x})\\
+& \nabla^2f(\beta) = 2(\lambda+1) > 0
+\end{aligned}
+\end{equation*}
+$$
+Therefore, we let $\nabla f(\beta)  = 0$ and get $\vec{\hat{\theta}_\lambda} = \frac{1}{\lambda + 1} \vec{x}$. Then we can decompose the Risk:
+$$R(\hat{\theta}_\lambda, \theta) = |E(\vec{\hat{\theta}_\lambda}) - \vec{\theta}|^2 + E(|\vec{\hat{\theta}_\lambda} - E(\vec{\hat{\theta}_\lambda})|^2) = (\frac{\lambda}{1+\lambda})^2 |\vec{\theta}|^2 + \frac{n \sigma_n^2}{(\lambda+1)^2} = A (\frac{\lambda}{1+\lambda})^2 + B(\frac{1}{1+\lambda})^2   $$
+where $A := |\vec{\theta}|^2, B:= n\sigma_n^2$.
+
+## (b)
+$$ R(\hat{\theta}_\lambda, \theta) = A (\frac{\lambda}{1+\lambda})^2 + B(\frac{1}{1+\lambda})^2 = \frac{A+B}{(\lambda+1)^2} - \frac{2A}{\lambda+1} + A$$
+Thus, we have
+$$ \frac{1}{1+\lambda_*} = \frac{A}{A+B}; \lambda_* = \frac{B}{A} = \frac{n\sigma_n^2}{|\vec{\theta}|^2}$$
+as the minimizer of the risk.
+
+## (c) 
+$$
+\begin{equation*}
+\begin{aligned}
+\hat{R}(\hat{\theta}_\lambda, \theta) & = n\sigma_n^2 + 2\sigma_n^2 div(g(\vec{x})) + |g(\vec{x})|^2 \\
+& = n\sigma_n^2 - 2\sigma_n^2 n (\frac{\lambda}{1+\lambda}) + (\frac{\lambda}{1+\lambda})^2|\vec{x}|^2\\
+& = B - 2Bu + A'u^2 \ (\text{we let } A' := |\vec{x}|^2, B := n\sigma_n^2, u:= \frac{\lambda}{1+\lambda})
+\end{aligned}
+\end{equation*}
+$$
+Thus the minimizer of the equation is $\frac{\lambda^*}{1+\lambda^*} = u^* = \frac{B}{A'}$. Thus $\lambda^* = \frac{B}{A'-B} = \frac{n\sigma_n^2}{|\vec{x}|^2 -n\sigma_n^2 }$ is the minimizer of SURE.
+
+## (d)
+The answer is yes.\
+
+From (b), we can get the minimax bound as $sup_{\vec{\theta} \in \Theta(c)} R(\hat{\theta}_{\lambda_*},\theta) = sup_{A \leq c^2} \frac{AB}{A+B} = \frac{B}{1+B/A} \leq \frac{B}{1+\frac{B}{C}}$ by easy calculation. \
+
+Then we know $|\vec{x}|^2 - n\sigma_n^2 \rightarrow |\vec{\theta}|^2$ asymptotically. Thus $\hat{R}(\hat{\theta}_\lambda^*, \theta) \rightarrow (\frac{B}{A+B})^2A + (1-\frac{B}{A+B})^2B = \frac{AB}{A+B} \leq \frac{B}{1+\frac{B}{C}}$. Thus the claim follows. 
+
+
+
+# 3
+
+## (a)
+$\hat{\theta}^{TS,v} - v$ is the James-Stein estimator for $\theta - v$. Thus, by Thm 7.4.2 (AoNS), we have
+$$ R(\hat{\theta}^{TS,v},\theta) = R(\hat{\theta}^{TS,v}-v, \theta - v) = n\sigma^2 - (n-2)^2 \sigma^4E(\frac{1}{||Z-v||^2})  \leq n\sigma^2   $$
+Then to the minimizer of risk is the maximizer of $E(\frac{1}{||z-v||^2})$. We know from the proof in Thm 7.4.2 that $||Z-v||^2 \sim \sigma^2 W$. When $||Z-v||^2 \neq 0$, $W$ is a noncentral $\chi^2$ with n degrees of freedom and noncentrality parameter $\delta = ||\theta||^2/\sigma^2$. Then $W \sim \chi^{2}_{n+2K}$, with $K \sim Poisson(\delta/2)$.Thus
+$$ \begin{aligned} \mathbb { E } _ { \theta } \left[ \frac { 1 } { \sum _ { i } Z _ { i } ^ { 2 } } \right] & = \left( \frac { 1 } { \sigma _ { n } ^ { 2 } } \right) \mathbb { E } \left[ \frac { 1 } { \chi _ { n + 2 K } ^ { 2 } } \right] = \left( \frac { 1 } { \sigma _ { n } ^ { 2 } } \right) \mathbb { E } \left( E \left[ \frac { 1 } { \chi _ { n + 2 K } ^ { 2 } } | K \right] \right) \\ & = \left( \frac { 1 } { \sigma _ { n } ^ { 2 } } \right) \mathbb { E } \left[ \frac { 1 } { n - 2 + 2 K } \right]\\  & \leq \frac { 1 } { \sigma _ { n } ^ { 2 } }  \frac { 1 } { n - 2 } \end{aligned}  $$
+But when $ ||Z-v|| = 0$, we have $W \sim \chi^2_{n}$. Then $\mathbb { E } _ { \theta } \left[ \frac { 1 } { \sum _ { i } Z _ { i } ^ { 2 } } \right] = \frac { 1 } { \sigma _ { n } ^ { 2 } }  \frac { 1 } { n - 2 }$, Thus we can clearly see the risk is minimized with $v = \theta$. 
+
+## (b)
+
+### When $n = 1$
+$$ R(\hat{\theta}^{a,b},\theta) = E(aZ+b-\theta)^2 = a^2\theta^2 + ((a-1)\theta+b)^2$$
+* when $a = 0$, 
+it is admissable. If not, suppose we have find 
+
+$\tilde{\theta}$ s.t $E(|\tilde{\theta}-\theta|^2) \leq R(\hat{\theta}^{a,b},\theta) = (b-\theta)^2, \forall \theta$. Let $\theta = b$, then we have $\tilde{\theta} \equiv b$ just itself. Then the inequality will never hold for any $\theta$. Thus contradictory.\
+
+* when $a < 0$
+
+Not admissable. 
+We can choose $\tilde{\theta} = \frac{b}{1-a}$. Then $R(\hat{\theta}^{a,b},\theta) > (\theta-\frac{b}{1-a})^2 = R(\tilde{\theta},\theta) \ \forall \theta$\
+
+* when $a>1$
+
+Not admissable.
+We can choose $\tilde{\theta} = Z$, then $R(\hat{\theta}^{a,b},\theta) > \sigma^2 = R(\tilde{\theta},\theta) \ \forall \theta$\
+
+* when $a=1, b\neq 0$
+
+Not admissable.
+We can choose $\tilde{\theta} = Z$, then $R(\hat{\theta}^{a,b},\theta) = \sigma^2 + b^2 > \sigma^2 = R(\tilde{\theta},\theta) \ \forall \theta$
+
+### When $n > 3$
+* $\hat{\theta} = Z$ 
+
+is not admissable, as $R(\hat{\theta},\theta) = n\sigma^2 > R(\hat{\theta}^{JS,v}, \theta)$\
+
+* $\hat{\theta}^{JS,v}$
+is not admissable.
+
+First observe that the modified JS estimator has smaller risk than the original JS estimator, since the negative shrinkage coefficient will cause bigger risk than coefficient that is 0. \
+
+Then define $$\widehat{\theta}^{JS,v}_+ = v + \left(1 -\frac{(n - 2) \sigma^{2}} {\sum_{i = 1}^{n} \left(Z_{i}-v_{i} \right) ^{ 2 }} \right)_+ (Z - v)$$
+
+Then $R(\widehat{\theta}^{JS,v},\theta) = R(\widehat{\theta}^{JS,v} -v, \theta-v) < R(\widehat{\theta}^{JS,v}_+ -v, \theta-v) = R(\widehat{\theta}^{JS, v}_+, \theta) $. Thus not admissiable. 
+
+
+## (c)
+```{r}
+train = read.csv("../data/hw3/baseball_train.txt", sep = "", header = FALSE)
+m = 45
+Y = as.numeric(train)
+suppressMessages(library(base))
+Z = sqrt(m)*asin(2*Y-1)
+n = length(Z)
+
+## normal means estimates
+mle = Z
+bhat = 1-(n-2)/sum(Z^2)
+js = bhat*Z
+
+v = replicate(n,mean(Z))
+bhat_v = 1-(n-2)/sum((Z-v)^2)
+js_v = bhat_v*(Z-v) + v
+
+## compare with the "truth"
+test = read.csv("../data/hw3/baseball_test.txt",sep = "", header = FALSE)
+p = as.numeric(test)
+theta = sqrt(m)*asin(2*p-1)
+
+print(paste0("mse for mle: ", sqrt(mean((theta-mle)^2))))
+print(paste0("mse for js: ", sqrt(mean((theta-js)^2))))
+print(paste0("mse for js with v: ", sqrt(mean((theta-js_v)^2))))
+
+```
+### Comment:
+In this case, the standard JS estimator does not get too much improvement. But the generalized JS with v to be the mean of all the data get a good result. 
+
+## (d)
+Estimating the proportion combined with betting averages is going to get a smaller risk.\
+
+From Wikipedia page Stein's paradox, we know "when three or more parameters are estimated simultaneously, there exist combined estimators more accurate on average (that is, having lower expected mean squared error) than any method that handles the parameters separately". Therefore such multitask learning is going to help us get better results. 
+
+
+
+# 4 James-Stein Estimator
+
+## formula $b_*$
+The risk is $\sum_{i} E(bZ_i-\theta_i)^2 = nb^2 + (b-1)^2 ||\theta||^2$. Let $A := ||\theta||^2$, we have $Risk = (A+n)b^2 - 2Ab + A$, a quadratic function. The minimizer is obviously $b_* = \frac{A}{A+n}$
+
+## compute estimates and compare risk
+```{r}
+n = 1000
+i = 1:n
+theta = 1/i^2
+z = rnorm(n,mean = theta,sd = replicate(n,1))
+
+## mle
+mle = z
+##  bstar
+A = sum(theta^2)
+risk0 <- function(b,a=A){
+  return((a+n)*b^2 - 2*a*b + a)
+}
+b = seq(0,0.002,0.0001)
+rs0 = sapply(b,function(b) risk0(b))
+plot(b,rs0, main = "risk vs b")
+bstar = A/(A+n)
+
+## get bhat from simulation
+
+risk <- function(b,z,theta){
+  return(sum((theta-b*z)^2))
+}
+
+js_exper <- function(seed, theta){
+  set.seed(seed)
+  n = length(theta)
+  z = rnorm(n,mean = theta,sd = replicate(n,1))
+  bhat = max(0,1- (n/sum(z^2)))
+  return(bhat)
+}
+
+exper = 1:1000
+Bhat = sapply(exper, function(seed) js_exper(seed, theta))
+plot(exper, Bhat, main = "simulated bhat vs bstar")
+abline(h = bstar, col = "red")
+
+## compute risk
+c = sum(theta^2)
+r_B = sapply(Bhat, function(bhat) sum((theta-bhat*z)^2))
+plot(exper, r_B,main = "risk of simulated js vs pinsker")
+abline(h = c^2/(1+c^2), col = "red")
+
+
+## finally, use the mean of the simulated bhat as bhat for comparison with MLE  
+bhat = mean(Bhat)
+
+print(paste0("mle risk is: ", sum((theta-mle)^2)))
+print(paste0("js risk is: ", sum((theta-bhat*z)^2)))
+
+print(paste0("pinsker bound when c= ",c," is ", c^2/(1+c^2) ))
+
+```
+## Comment:
+* James-Stein gets better results than MLE.This is because variance is much larger than the means, where shrinkage gets advantage over MLE. \
+
+* James-Stein is bounded by Pinsker bound, which must be true.  
+
+
+
+# 5
+```{r}
+data_p5 = read.csv("../data/hw3/assn3-prob5-data.txt", header = FALSE)
+x = data_p5$V1
+plot(density(x))
+#lines(density(rpois(100,mean(x))), col = "red")
+```
+
+## estimate sigma
+```{r }
+#plot(1:length(x), sort(x, decreasing = TRUE))
+## take the 25% ~ 75% data and 
+## divide them into smalls bins of length h
+## get variance for each of the bins and then take the average
+
+data_mid = sort(x, decreasing = TRUE)[(0.1*length(x)):(0.9*length(x))]
+plot(1:length(data_mid), data_mid)
+
+est_var <- function(h=10,step=3,data=data_mid){
+  n = length(data)
+  Sigma = vector()
+  #Diff = vector()
+  for(i in seq(1,n-h,step)){
+    z = data[i:(i+h)]
+    Sigma = c(Sigma, mean((z - mean(z))^2))
+    #Diff = (max(z) -min(z))/mean(z)
+  }
+  sigma = mean(Sigma)
+  #diff = mean(Diff)
+  return(sigma)
+}
+
+```
+
+```{r}
+sigma = est_var(50)
+n = length(x)
+theta_hat = max(0, 1-n*sigma^2/sum(x^2)) * x
+plot(density(theta_hat), main = paste0("sigma ", format(sigma,4), " b ", max(0, 1-n*sigma^2/sum(x^2))))
+write.table(theta_hat, "../data/assn3-wangzh.txt", row.names = FALSE, col.names=FALSE, sep = "\n")
+```
+## Comment:
+Without any means of validation, this way of estimating variance is like pure guessing...
+
+
+
+
+
+
+
+

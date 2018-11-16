@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+<meta name="author" content="Zihao_Wang" />
+
+<meta name="date" content="2018-11-13" />
+
+<title>HW3</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-4.5.0/css/font-awesome.min.css" rel="stylesheet" />
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+  padding-left: 25px;
+  text-indent: 0;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">stat374-fall-2018</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="about.html">About</a>
+</li>
+<li>
+  <a href="license.html">License</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://github.com/jdblischak/workflowr">
+    <span class="fa fa-github"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<!-- Add a small amount of space between sections. -->
+<style type="text/css">
+div.section {
+  padding-top: 12px;
+}
+</style>
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">HW3</h1>
+<h4 class="author"><em>Zihao_Wang</em></h4>
+<h4 class="date"><em>11/13/2018</em></h4>
+
+</div>
+
+
+<p><strong>Last updated:</strong> 2018-11-15</p>
+<strong>workflowr checks:</strong> <small>(Click a bullet for more information)</small>
+<ul>
+<li>
+<p><details> <summary> <strong style="color:red;">✖</strong> <strong>R Markdown file:</strong> uncommitted changes </summary> The R Markdown is untracked by Git. To know which version of the R Markdown file created these results, you’ll want to first commit it to the Git repo. If you’re still working on the analysis, you can ignore this warning. When you’re finished, you can run <code>wflow_publish</code> to commit the R Markdown file and build the HTML.</p>
+</details>
+</li>
+<li>
+<p><details> <summary> <strong style="color:blue;">✔</strong> <strong>Environment:</strong> empty </summary></p>
+<p>Great job! The global environment was empty. Objects defined in the global environment can affect the analysis in your R Markdown file in unknown ways. For reproduciblity it’s best to always run the code in an empty environment.</p>
+</details>
+</li>
+<li>
+<p><details> <summary> <strong style="color:blue;">✔</strong> <strong>Seed:</strong> <code>set.seed(20181007)</code> </summary></p>
+<p>The command <code>set.seed(20181007)</code> was run prior to running the code in the R Markdown file. Setting a seed ensures that any results that rely on randomness, e.g. subsampling or permutations, are reproducible.</p>
+</details>
+</li>
+<li>
+<p><details> <summary> <strong style="color:blue;">✔</strong> <strong>Session information:</strong> recorded </summary></p>
+<p>Great job! Recording the operating system, R version, and package versions is critical for reproducibility.</p>
+</details>
+</li>
+<li>
+<p><details> <summary> <strong style="color:blue;">✔</strong> <strong>Repository version:</strong> <a href="https://github.com/zihao12/stat374-fall-2018/tree/02c65b7d828899d99c96b347e76c0c7603c9233b" target="_blank">02c65b7</a> </summary></p>
+Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility. The version displayed above was the version of the Git repository at the time these results were generated. <br><br> Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
+<pre><code>
+Ignored files:
+    Ignored:    .DS_Store
+    Ignored:    .Rhistory
+    Ignored:    .Rproj.user/
+    Ignored:    data/.DS_Store
+
+Untracked files:
+    Untracked:  analysis/hw3.Rmd
+    Untracked:  assignment/assignment3.pdf
+    Untracked:  code/hw3.Rmd
+    Untracked:  code/hw3.log
+    Untracked:  code/hw3.tex
+    Untracked:  data/assn3-prob5-wangzh.txt
+    Untracked:  data/assn3-wangzh.txt
+    Untracked:  data/hw3/
+    Untracked:  docs/figure/hw3.Rmd/
+
+</code></pre>
+Note that any generated files, e.g. HTML, png, CSS, etc., are not included in this status report because it is ok for generated content to have uncommitted changes. </details>
+</li>
+</ul>
+<hr />
+<pre class="r"><code>rm(list=ls())
+set.seed(12345)
+options(warn = -1)
+knitr::opts_knit$set(root.dir = &#39;~/Desktop/stat374-fall-2018/analysis/&#39;)
+suppressMessages(library(kedd))
+suppressMessages(library(fields))
+suppressMessages(library(&quot;tidyverse&quot;))</code></pre>
+<div id="chicago-crime" class="section level1">
+<h1>1 Chicago Crime</h1>
+<pre class="r"><code># crime = read.csv(&quot;../data/hw3/Crimes_-_Map.csv&quot;)
+# crime_loc = crime[,c(&quot;LATITUDE&quot;,&quot;LONGITUDE&quot;)]
+# saveRDS(crime_loc, &quot;../data/hw3/crime_loc.rds&quot;)
+crime_loc = readRDS(&quot;../data/hw3/crime_loc.rds&quot;)
+## remove samples with NA
+crime_loc = na.omit(crime_loc)</code></pre>
+<pre class="r"><code>set.seed(12345)
+## take a small sample of data to select the right bandwidth
+crime_loc.sub=crime_loc[sample(1:nrow(crime_loc),1000),]
+lat.sub= crime_loc.sub$LATITUDE
+long.sub = crime_loc.sub$LONGITUDE
+
+
+## Broad search for longtitude
+ucv_long = h.ucv(long.sub,lower = 0, upper = 0.05, tol = 0.0001)
+plot(ucv_long, main = &quot;bandwidth vs ucv for long&quot;)</code></pre>
+<pre><code>$kernel
+[1] &quot;gaussian&quot;
+
+$deriv.order
+[1] 0
+
+$seq.bws
+ [1] 0.002451702 0.003068797 0.003685892 0.004302987 0.004920082
+ [6] 0.005537177 0.006154272 0.006771367 0.007388462 0.008005557
+[11] 0.008622652 0.009239747 0.009856842 0.010473937 0.011091032
+[16] 0.011708127 0.012325222 0.012942317 0.013559412 0.014176507
+[21] 0.014793602 0.015410697 0.016027792 0.016644887 0.017261982
+[26] 0.017879077 0.018496172 0.019113267 0.019730362 0.020347457
+[31] 0.020964552 0.021581647 0.022198742 0.022815837 0.023432932
+[36] 0.024050027 0.024667122 0.025284217 0.025901312 0.026518407
+[41] 0.027135502 0.027752597 0.028369692 0.028986787 0.029603882
+[46] 0.030220977 0.030838072 0.031455167 0.032072262 0.032689357
+
+$ucv
+ [1] -5.293609 -5.278013 -5.263121 -5.248248 -5.232179 -5.214967 -5.197465
+ [8] -5.180562 -5.164809 -5.150390 -5.137234 -5.125151 -5.113923 -5.103355
+[15] -5.093290 -5.083613 -5.074237 -5.065101 -5.056158 -5.047372 -5.038718
+[22] -5.030175 -5.021727 -5.013364 -5.005081 -4.996872 -4.988738 -4.980681
+[29] -4.972701 -4.964805 -4.956995 -4.949276 -4.941652 -4.934127 -4.926703
+[36] -4.919383 -4.912166 -4.905052 -4.898040 -4.891127 -4.884310 -4.877584
+[43] -4.870943 -4.864380 -4.857889 -4.851462 -4.845090 -4.838765 -4.832478
+[50] -4.826220</code></pre>
+<pre class="r"><code># ## fine search (locate a neighborhood of the best point from broad search)
+ucv_long = h.ucv(long.sub, lower = 0.7*ucv_long$h, higher = 1.3*ucv_long$h, tol = 0.0001)
+plot(ucv_long, main = &quot;bandwidth vs ucv for long&quot;)</code></pre>
+<p><img src="figure/hw3.Rmd/unnamed-chunk-3-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>$kernel
+[1] &quot;gaussian&quot;
+
+$deriv.order
+[1] 0
+
+$seq.bws
+ [1] 0.002451702 0.003068797 0.003685892 0.004302987 0.004920082
+ [6] 0.005537177 0.006154272 0.006771367 0.007388462 0.008005557
+[11] 0.008622652 0.009239747 0.009856842 0.010473937 0.011091032
+[16] 0.011708127 0.012325222 0.012942317 0.013559412 0.014176507
+[21] 0.014793602 0.015410697 0.016027792 0.016644887 0.017261982
+[26] 0.017879077 0.018496172 0.019113267 0.019730362 0.020347457
+[31] 0.020964552 0.021581647 0.022198742 0.022815837 0.023432932
+[36] 0.024050027 0.024667122 0.025284217 0.025901312 0.026518407
+[41] 0.027135502 0.027752597 0.028369692 0.028986787 0.029603882
+[46] 0.030220977 0.030838072 0.031455167 0.032072262 0.032689357
+
+$ucv
+ [1] -5.293609 -5.278013 -5.263121 -5.248248 -5.232179 -5.214967 -5.197465
+ [8] -5.180562 -5.164809 -5.150390 -5.137234 -5.125151 -5.113923 -5.103355
+[15] -5.093290 -5.083613 -5.074237 -5.065101 -5.056158 -5.047372 -5.038718
+[22] -5.030175 -5.021727 -5.013364 -5.005081 -4.996872 -4.988738 -4.980681
+[29] -4.972701 -4.964805 -4.956995 -4.949276 -4.941652 -4.934127 -4.926703
+[36] -4.919383 -4.912166 -4.905052 -4.898040 -4.891127 -4.884310 -4.877584
+[43] -4.870943 -4.864380 -4.857889 -4.851462 -4.845090 -4.838765 -4.832478
+[50] -4.826220</code></pre>
+<pre class="r"><code>## Broad search for latitude
+ucv_lat = h.ucv(lat.sub,lower = 0, upper = 0.05,tol = 0.0001)
+plot(ucv_lat, main = &quot;bandwidth vs ucv for lat&quot;)</code></pre>
+<pre><code>$kernel
+[1] &quot;gaussian&quot;
+
+$deriv.order
+[1] 0
+
+$seq.bws
+ [1] 0.003654683 0.004574569 0.005494455 0.006414341 0.007334227
+ [6] 0.008254114 0.009174000 0.010093886 0.011013772 0.011933658
+[11] 0.012853544 0.013773431 0.014693317 0.015613203 0.016533089
+[16] 0.017452975 0.018372861 0.019292747 0.020212634 0.021132520
+[21] 0.022052406 0.022972292 0.023892178 0.024812064 0.025731951
+[26] 0.026651837 0.027571723 0.028491609 0.029411495 0.030331381
+[31] 0.031251267 0.032171154 0.033091040 0.034010926 0.034930812
+[36] 0.035850698 0.036770584 0.037690471 0.038610357 0.039530243
+[41] 0.040450129 0.041370015 0.042289901 0.043209788 0.044129674
+[46] 0.045049560 0.045969446 0.046889332 0.047809218 0.048729104
+
+$ucv
+ [1] -3.829667 -3.817585 -3.805652 -3.796917 -3.790954 -3.786334 -3.781991
+ [8] -3.777383 -3.772259 -3.766479 -3.759940 -3.752559 -3.744284 -3.735092
+[15] -3.724991 -3.714016 -3.702219 -3.689666 -3.676431 -3.662588 -3.648216
+[22] -3.633391 -3.618188 -3.602679 -3.586936 -3.571024 -3.555008 -3.538949
+[29] -3.522903 -3.506922 -3.491057 -3.475351 -3.459845 -3.444573 -3.429568
+[36] -3.414855 -3.400456 -3.386390 -3.372670 -3.359306 -3.346305 -3.333669
+[43] -3.321400 -3.309495 -3.297949 -3.286755 -3.275906 -3.265392 -3.255201
+[50] -3.245323</code></pre>
+<pre class="r"><code># ## fine search (locate a neighborhood of the best point from broad search)
+ucv_lat = h.ucv(lat.sub, lower = 0.7*ucv_lat$h, higher = 1.3*ucv_lat$h, tol = 0.0001)
+plot(ucv_lat, main = &quot;bandwidth vs ucv for lat&quot;)</code></pre>
+<p><img src="figure/hw3.Rmd/unnamed-chunk-3-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>$kernel
+[1] &quot;gaussian&quot;
+
+$deriv.order
+[1] 0
+
+$seq.bws
+ [1] 0.003654683 0.004574569 0.005494455 0.006414341 0.007334227
+ [6] 0.008254114 0.009174000 0.010093886 0.011013772 0.011933658
+[11] 0.012853544 0.013773431 0.014693317 0.015613203 0.016533089
+[16] 0.017452975 0.018372861 0.019292747 0.020212634 0.021132520
+[21] 0.022052406 0.022972292 0.023892178 0.024812064 0.025731951
+[26] 0.026651837 0.027571723 0.028491609 0.029411495 0.030331381
+[31] 0.031251267 0.032171154 0.033091040 0.034010926 0.034930812
+[36] 0.035850698 0.036770584 0.037690471 0.038610357 0.039530243
+[41] 0.040450129 0.041370015 0.042289901 0.043209788 0.044129674
+[46] 0.045049560 0.045969446 0.046889332 0.047809218 0.048729104
+
+$ucv
+ [1] -3.829667 -3.817585 -3.805652 -3.796917 -3.790954 -3.786334 -3.781991
+ [8] -3.777383 -3.772259 -3.766479 -3.759940 -3.752559 -3.744284 -3.735092
+[15] -3.724991 -3.714016 -3.702219 -3.689666 -3.676431 -3.662588 -3.648216
+[22] -3.633391 -3.618188 -3.602679 -3.586936 -3.571024 -3.555008 -3.538949
+[29] -3.522903 -3.506922 -3.491057 -3.475351 -3.459845 -3.444573 -3.429568
+[36] -3.414855 -3.400456 -3.386390 -3.372670 -3.359306 -3.346305 -3.333669
+[43] -3.321400 -3.309495 -3.297949 -3.286755 -3.275906 -3.265392 -3.255201
+[50] -3.245323</code></pre>
+<pre class="r"><code>plot(density(crime_loc$LONGITUDE,bw=ucv_long$h),main=&quot;Longitude Density Plot&quot;)</code></pre>
+<p><img src="figure/hw3.Rmd/unnamed-chunk-3-3.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>plot(density(crime_loc$LATITUDE,bw=ucv_lat$h),main=&quot;Latitude Density Plot&quot;)</code></pre>
+<p><img src="figure/hw3.Rmd/unnamed-chunk-3-4.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>suppressMessages(library(MASS))
+## the amount of smoothing is chosen by default
+est_density = kde2d(crime_loc$LONGITUDE, crime_loc$LATITUDE, n = 100)
+image.plot(est_density, col = rainbow(1000))</code></pre>
+<p><img src="figure/hw3.Rmd/unnamed-chunk-4-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="normal-means-and-penalization" class="section level1">
+<h1>2 Normal Means and Penalization</h1>
+<div id="a-derive-the-bias-variance-decomposition-of-the-risk-of-hattheta_lambda" class="section level2">
+<h2>(a) Derive the bias-variance decomposition of the risk of <span class="math inline">\(\hat{\theta}_{\lambda}\)</span></h2>
+<p>First, compute <span class="math inline">\(\hat{\theta}_{\lambda}\)</span>:\ Since our objective function is: <span class="math display">\[ f(\beta) := (\vec{x} - \vec{\beta})^T (\vec{x} - \vec{\beta}) + \lambda \beta ^T \beta    \]</span>. We can compute its first and second order derivative: <span class="math display">\[
+\begin{equation*}
+\begin{aligned}
+&amp; \nabla f(\beta) = 2((\lambda+1)\vec{\beta} - \vec{x})\\
+&amp; \nabla^2f(\beta) = 2(\lambda+1) &gt; 0
+\end{aligned}
+\end{equation*}
+\]</span> Therefore, we let <span class="math inline">\(\nabla f(\beta) = 0\)</span> and get <span class="math inline">\(\vec{\hat{\theta}_\lambda} = \frac{1}{\lambda + 1} \vec{x}\)</span>. Then we can decompose the Risk: <span class="math display">\[R(\hat{\theta}_\lambda, \theta) = |E(\vec{\hat{\theta}_\lambda}) - \vec{\theta}|^2 + E(|\vec{\hat{\theta}_\lambda} - E(\vec{\hat{\theta}_\lambda})|^2) = (\frac{\lambda}{1+\lambda})^2 |\vec{\theta}|^2 + \frac{n \sigma_n^2}{(\lambda+1)^2} = A (\frac{\lambda}{1+\lambda})^2 + B(\frac{1}{1+\lambda})^2   \]</span> where <span class="math inline">\(A := |\vec{\theta}|^2, B:= n\sigma_n^2\)</span>.</p>
+</div>
+<div id="b" class="section level2">
+<h2>(b)</h2>
+<p><span class="math display">\[ R(\hat{\theta}_\lambda, \theta) = A (\frac{\lambda}{1+\lambda})^2 + B(\frac{1}{1+\lambda})^2 = \frac{A+B}{(\lambda+1)^2} - \frac{2A}{\lambda+1} + A\]</span> Thus, we have <span class="math display">\[ \frac{1}{1+\lambda_*} = \frac{A}{A+B}; \lambda_* = \frac{B}{A} = \frac{n\sigma_n^2}{|\vec{\theta}|^2}\]</span> as the minimizer of the risk.</p>
+</div>
+<div id="c" class="section level2">
+<h2>(c)</h2>
+<p><span class="math display">\[
+\begin{equation*}
+\begin{aligned}
+\hat{R}(\hat{\theta}_\lambda, \theta) &amp; = n\sigma_n^2 + 2\sigma_n^2 div(g(\vec{x})) + |g(\vec{x})|^2 \\
+&amp; = n\sigma_n^2 - 2\sigma_n^2 n (\frac{\lambda}{1+\lambda}) + (\frac{\lambda}{1+\lambda})^2|\vec{x}|^2\\
+&amp; = B - 2Bu + A&#39;u^2 \ (\text{we let } A&#39; := |\vec{x}|^2, B := n\sigma_n^2, u:= \frac{\lambda}{1+\lambda})
+\end{aligned}
+\end{equation*}
+\]</span> Thus the minimizer of the equation is <span class="math inline">\(\frac{\lambda^*}{1+\lambda^*} = u^* = \frac{B}{A&#39;}\)</span>. Thus <span class="math inline">\(\lambda^* = \frac{B}{A&#39;-B} = \frac{n\sigma_n^2}{|\vec{x}|^2 -n\sigma_n^2 }\)</span> is the minimizer of SURE.</p>
+</div>
+<div id="d" class="section level2">
+<h2>(d)</h2>
+<p>The answer is yes.<br />
+From (b), we can get the minimax bound as <span class="math inline">\(sup_{\vec{\theta} \in \Theta(c)} R(\hat{\theta}_{\lambda_*},\theta) = sup_{A \leq c^2} \frac{AB}{A+B} = \frac{B}{1+B/A} \leq \frac{B}{1+\frac{B}{C}}\)</span> by easy calculation.<br />
+Then we know <span class="math inline">\(|\vec{x}|^2 - n\sigma_n^2 \rightarrow |\vec{\theta}|^2\)</span> asymptotically. Thus <span class="math inline">\(\hat{R}(\hat{\theta}_\lambda^*, \theta) \rightarrow (\frac{B}{A+B})^2A + (1-\frac{B}{A+B})^2B = \frac{AB}{A+B} \leq \frac{B}{1+\frac{B}{C}}\)</span>. Thus the claim follows.</p>
+</div>
+</div>
+<div id="section" class="section level1">
+<h1>3</h1>
+<div id="a" class="section level2">
+<h2>(a)</h2>
+<p><span class="math inline">\(\hat{\theta}^{TS,v} - v\)</span> is the James-Stein estimator for <span class="math inline">\(\theta - v\)</span>. Thus, by Thm 7.4.2 (AoNS), we have <span class="math display">\[ R(\hat{\theta}^{TS,v},\theta) = R(\hat{\theta}^{TS,v}-v, \theta - v) = n\sigma^2 - (n-2)^2 \sigma^4E(\frac{1}{||Z-v||^2})  \leq n\sigma^2   \]</span> Then to the minimizer of risk is the maximizer of <span class="math inline">\(E(\frac{1}{||z-v||^2})\)</span>. We know from the proof in Thm 7.4.2 that <span class="math inline">\(||Z-v||^2 \sim \sigma^2 W\)</span>. When <span class="math inline">\(||Z-v||^2 \neq 0\)</span>, <span class="math inline">\(W\)</span> is a noncentral <span class="math inline">\(\chi^2\)</span> with n degrees of freedom and noncentrality parameter <span class="math inline">\(\delta = ||\theta||^2/\sigma^2\)</span>. Then <span class="math inline">\(W \sim \chi^{2}_{n+2K}\)</span>, with <span class="math inline">\(K \sim Poisson(\delta/2)\)</span>.Thus <span class="math display">\[ \begin{aligned} \mathbb { E } _ { \theta } \left[ \frac { 1 } { \sum _ { i } Z _ { i } ^ { 2 } } \right] &amp; = \left( \frac { 1 } { \sigma _ { n } ^ { 2 } } \right) \mathbb { E } \left[ \frac { 1 } { \chi _ { n + 2 K } ^ { 2 } } \right] = \left( \frac { 1 } { \sigma _ { n } ^ { 2 } } \right) \mathbb { E } \left( E \left[ \frac { 1 } { \chi _ { n + 2 K } ^ { 2 } } | K \right] \right) \\ &amp; = \left( \frac { 1 } { \sigma _ { n } ^ { 2 } } \right) \mathbb { E } \left[ \frac { 1 } { n - 2 + 2 K } \right]\\  &amp; \leq \frac { 1 } { \sigma _ { n } ^ { 2 } }  \frac { 1 } { n - 2 } \end{aligned}  \]</span> But when $ ||Z-v|| = 0$, we have <span class="math inline">\(W \sim \chi^2_{n}\)</span>. Then <span class="math inline">\(\mathbb { E } _ { \theta } \left[ \frac { 1 } { \sum _ { i } Z _ { i } ^ { 2 } } \right] = \frac { 1 } { \sigma _ { n } ^ { 2 } } \frac { 1 } { n - 2 }\)</span>, Thus we can clearly see the risk is minimized with <span class="math inline">\(v = \theta\)</span>.</p>
+</div>
+<div id="b-1" class="section level2">
+<h2>(b)</h2>
+<div id="when-n-1" class="section level3">
+<h3>When <span class="math inline">\(n = 1\)</span></h3>
+<p><span class="math display">\[ R(\hat{\theta}^{a,b},\theta) = E(aZ+b-\theta)^2 = a^2\theta^2 + ((a-1)\theta+b)^2\]</span> * when <span class="math inline">\(a = 0\)</span>, it is admissable. If not, suppose we have find</p>
+<p><span class="math inline">\(\tilde{\theta}\)</span> s.t <span class="math inline">\(E(|\tilde{\theta}-\theta|^2) \leq R(\hat{\theta}^{a,b},\theta) = (b-\theta)^2, \forall \theta\)</span>. Let <span class="math inline">\(\theta = b\)</span>, then we have <span class="math inline">\(\tilde{\theta} \equiv b\)</span> just itself. Then the inequality will never hold for any <span class="math inline">\(\theta\)</span>. Thus contradictory.<br />
+* when <span class="math inline">\(a &lt; 0\)</span></p>
+<p>Not admissable. We can choose <span class="math inline">\(\tilde{\theta} = \frac{b}{1-a}\)</span>. Then <span class="math inline">\(R(\hat{\theta}^{a,b},\theta) &gt; (\theta-\frac{b}{1-a})^2 = R(\tilde{\theta},\theta) \ \forall \theta\)</span><br />
+* when <span class="math inline">\(a&gt;1\)</span></p>
+<p>Not admissable. We can choose <span class="math inline">\(\tilde{\theta} = Z\)</span>, then <span class="math inline">\(R(\hat{\theta}^{a,b},\theta) &gt; \sigma^2 = R(\tilde{\theta},\theta) \ \forall \theta\)</span><br />
+* when <span class="math inline">\(a=1, b\neq 0\)</span></p>
+<p>Not admissable. We can choose <span class="math inline">\(\tilde{\theta} = Z\)</span>, then <span class="math inline">\(R(\hat{\theta}^{a,b},\theta) = \sigma^2 + b^2 &gt; \sigma^2 = R(\tilde{\theta},\theta) \ \forall \theta\)</span></p>
+</div>
+<div id="when-n-3" class="section level3">
+<h3>When <span class="math inline">\(n &gt; 3\)</span></h3>
+<ul>
+<li><span class="math inline">\(\hat{\theta} = Z\)</span></li>
+</ul>
+<p>is not admissable, as <span class="math inline">\(R(\hat{\theta},\theta) = n\sigma^2 &gt; R(\hat{\theta}^{JS,v}, \theta)\)</span><br />
+* <span class="math inline">\(\hat{\theta}^{JS,v}\)</span> is not admissable.</p>
+<p>First observe that the modified JS estimator has smaller risk than the original JS estimator, since the negative shrinkage coefficient will cause bigger risk than coefficient that is 0.<br />
+Then define <span class="math display">\[\widehat{\theta}^{JS,v}_+ = v + \left(1 -\frac{(n - 2) \sigma^{2}} {\sum_{i = 1}^{n} \left(Z_{i}-v_{i} \right) ^{ 2 }} \right)_+ (Z - v)\]</span></p>
+<p>Then $R(^{JS,v},) = R(^{JS,v} -v, -v) &lt; R(^{JS,v}<em>+ -v, -v) = R(^{JS, v}</em>+, ) $. Thus not admissiable.</p>
+</div>
+</div>
+<div id="c-1" class="section level2">
+<h2>(c)</h2>
+<pre class="r"><code>train = read.csv(&quot;../data/hw3/baseball_train.txt&quot;, sep = &quot;&quot;, header = FALSE)
+m = 45
+Y = as.numeric(train)
+suppressMessages(library(base))
+Z = sqrt(m)*asin(2*Y-1)
+n = length(Z)
+
+## normal means estimates
+mle = Z
+bhat = 1-(n-2)/sum(Z^2)
+js = bhat*Z
+
+v = replicate(n,mean(Z))
+bhat_v = 1-(n-2)/sum((Z-v)^2)
+js_v = bhat_v*(Z-v) + v
+
+## compare with the &quot;truth&quot;
+test = read.csv(&quot;../data/hw3/baseball_test.txt&quot;,sep = &quot;&quot;, header = FALSE)
+p = as.numeric(test)
+theta = sqrt(m)*asin(2*p-1)
+
+print(paste0(&quot;mse for mle: &quot;, sqrt(mean((theta-mle)^2))))</code></pre>
+<pre><code>[1] &quot;mse for mle: 0.988201780557244&quot;</code></pre>
+<pre class="r"><code>print(paste0(&quot;mse for js: &quot;, sqrt(mean((theta-js)^2))))</code></pre>
+<pre><code>[1] &quot;mse for js: 0.950822482599612&quot;</code></pre>
+<pre class="r"><code>print(paste0(&quot;mse for js with v: &quot;, sqrt(mean((theta-js_v)^2))))</code></pre>
+<pre><code>[1] &quot;mse for js with v: 0.527316923239491&quot;</code></pre>
+<div id="comment" class="section level3">
+<h3>Comment:</h3>
+<p>In this case, the standard JS estimator does not get too much improvement. But the generalized JS with v to be the mean of all the data get a good result.</p>
+</div>
+</div>
+<div id="d-1" class="section level2">
+<h2>(d)</h2>
+<p>Estimating the proportion combined with betting averages is going to get a smaller risk.<br />
+From Wikipedia page Stein’s paradox, we know “when three or more parameters are estimated simultaneously, there exist combined estimators more accurate on average (that is, having lower expected mean squared error) than any method that handles the parameters separately”. Therefore such multitask learning is going to help us get better results.</p>
+</div>
+</div>
+<div id="james-stein-estimator" class="section level1">
+<h1>4 James-Stein Estimator</h1>
+<div id="formula-b_" class="section level2">
+<h2>formula <span class="math inline">\(b_*\)</span></h2>
+<p>The risk is <span class="math inline">\(\sum_{i} E(bZ_i-\theta_i)^2 = nb^2 + (b-1)^2 ||\theta||^2\)</span>. Let <span class="math inline">\(A := ||\theta||^2\)</span>, we have <span class="math inline">\(Risk = (A+n)b^2 - 2Ab + A\)</span>, a quadratic function. The minimizer is obviously <span class="math inline">\(b_* = \frac{A}{A+n}\)</span></p>
+</div>
+<div id="compute-estimates-and-compare-risk" class="section level2">
+<h2>compute estimates and compare risk</h2>
+<pre class="r"><code>n = 1000
+i = 1:n
+theta = 1/i^2
+z = rnorm(n,mean = theta,sd = replicate(n,1))
+
+## mle
+mle = z
+##  bstar
+A = sum(theta^2)
+risk0 &lt;- function(b,a=A){
+  return((a+n)*b^2 - 2*a*b + a)
+}
+b = seq(0,0.002,0.0001)
+rs0 = sapply(b,function(b) risk0(b))
+plot(b,rs0, main = &quot;risk vs b&quot;)</code></pre>
+<p><img src="figure/hw3.Rmd/unnamed-chunk-6-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>bstar = A/(A+n)
+
+## get bhat from simulation
+
+risk &lt;- function(b,z,theta){
+  return(sum((theta-b*z)^2))
+}
+
+js_exper &lt;- function(seed, theta){
+  set.seed(seed)
+  n = length(theta)
+  z = rnorm(n,mean = theta,sd = replicate(n,1))
+  bhat = max(0,1- (n/sum(z^2)))
+  return(bhat)
+}
+
+exper = 1:1000
+Bhat = sapply(exper, function(seed) js_exper(seed, theta))
+plot(exper, Bhat, main = &quot;simulated bhat vs bstar&quot;)
+abline(h = bstar, col = &quot;red&quot;)</code></pre>
+<p><img src="figure/hw3.Rmd/unnamed-chunk-6-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>## compute risk
+c = sum(theta^2)
+r_B = sapply(Bhat, function(bhat) sum((theta-bhat*z)^2))
+plot(exper, r_B,main = &quot;risk of simulated js vs pinsker&quot;)
+abline(h = c^2/(1+c^2), col = &quot;red&quot;)</code></pre>
+<p><img src="figure/hw3.Rmd/unnamed-chunk-6-3.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>## finally, use the mean of the simulated bhat as bhat for comparison with MLE  
+bhat = mean(Bhat)
+
+print(paste0(&quot;mle risk is: &quot;, sum((theta-mle)^2)))</code></pre>
+<pre><code>[1] &quot;mle risk is: 1012.50147856472&quot;</code></pre>
+<pre class="r"><code>print(paste0(&quot;js risk is: &quot;, sum((theta-bhat*z)^2)))</code></pre>
+<pre><code>[1] &quot;js risk is: 1.43398520121747&quot;</code></pre>
+<pre class="r"><code>print(paste0(&quot;pinsker bound when c= &quot;,c,&quot; is &quot;, c^2/(1+c^2) ))</code></pre>
+<pre><code>[1] &quot;pinsker bound when c= 1.0823232333783 is 0.539472625923871&quot;</code></pre>
+</div>
+<div id="comment-1" class="section level2">
+<h2>Comment:</h2>
+<ul>
+<li>James-Stein gets better results than MLE.This is because variance is much larger than the means, where shrinkage gets advantage over MLE.<br />
+</li>
+<li>James-Stein is bounded by Pinsker bound, which must be true.</li>
+</ul>
+</div>
+</div>
+<div id="section-1" class="section level1">
+<h1>5</h1>
+<pre class="r"><code>data_p5 = read.csv(&quot;../data/hw3/assn3-prob5-data.txt&quot;, header = FALSE)
+x = data_p5$V1
+plot(density(x))</code></pre>
+<p><img src="figure/hw3.Rmd/unnamed-chunk-7-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>#lines(density(rpois(100,mean(x))), col = &quot;red&quot;)</code></pre>
+<div id="estimate-sigma" class="section level2">
+<h2>estimate sigma</h2>
+<pre class="r"><code>#plot(1:length(x), sort(x, decreasing = TRUE))
+## take the 25% ~ 75% data and 
+## divide them into smalls bins of length h
+## get variance for each of the bins and then take the average
+
+data_mid = sort(x, decreasing = TRUE)[(0.1*length(x)):(0.9*length(x))]
+plot(1:length(data_mid), data_mid)</code></pre>
+<p><img src="figure/hw3.Rmd/unnamed-chunk-8-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>est_var &lt;- function(h=10,step=3,data=data_mid){
+  n = length(data)
+  Sigma = vector()
+  #Diff = vector()
+  for(i in seq(1,n-h,step)){
+    z = data[i:(i+h)]
+    Sigma = c(Sigma, mean((z - mean(z))^2))
+    #Diff = (max(z) -min(z))/mean(z)
+  }
+  sigma = mean(Sigma)
+  #diff = mean(Diff)
+  return(sigma)
+}</code></pre>
+<pre class="r"><code>sigma = est_var(50)
+n = length(x)
+theta_hat = max(0, 1-n*sigma^2/sum(x^2)) * x
+plot(density(theta_hat), main = paste0(&quot;sigma &quot;, format(sigma,4), &quot; b &quot;, max(0, 1-n*sigma^2/sum(x^2))))</code></pre>
+<p><img src="figure/hw3.Rmd/unnamed-chunk-9-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>write.table(theta_hat, &quot;../data/assn3-wangzh.txt&quot;, row.names = FALSE, col.names=FALSE, sep = &quot;\n&quot;)</code></pre>
+</div>
+<div id="comment-2" class="section level2">
+<h2>Comment:</h2>
+<p>Without any means of validation, this way of estimating variance is like pure guessing…</p>
+</div>
+<div id="session-information" class="section level2">
+<h2>Session information</h2>
+<pre class="r"><code>sessionInfo()</code></pre>
+<pre><code>R version 3.4.3 (2017-11-30)
+Platform: x86_64-apple-darwin15.6.0 (64-bit)
+Running under: macOS High Sierra 10.13
+
+Matrix products: default
+BLAS: /Library/Frameworks/R.framework/Versions/3.4/Resources/lib/libRblas.0.dylib
+LAPACK: /Library/Frameworks/R.framework/Versions/3.4/Resources/lib/libRlapack.dylib
+
+locale:
+[1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
+
+attached base packages:
+[1] grid      stats     graphics  grDevices utils     datasets  methods  
+[8] base     
+
+other attached packages:
+ [1] MASS_7.3-50     forcats_0.3.0   stringr_1.3.1   dplyr_0.7.7    
+ [5] purrr_0.2.5     readr_1.1.1     tidyr_0.8.1     tibble_1.4.2   
+ [9] ggplot2_3.1.0   tidyverse_1.2.1 fields_9.6      maps_3.3.0     
+[13] spam_2.2-0      dotCall64_1.0-0 kedd_1.0.3     
+
+loaded via a namespace (and not attached):
+ [1] tidyselect_0.2.5  reshape2_1.4.3    haven_1.1.1      
+ [4] lattice_0.20-35   colorspace_1.3-2  htmltools_0.3.6  
+ [7] yaml_2.1.19       rlang_0.3.0.1     R.oo_1.22.0      
+[10] pillar_1.2.2      withr_2.1.2       foreign_0.8-70   
+[13] glue_1.3.0        R.utils_2.6.0     readxl_1.1.0     
+[16] modelr_0.1.2      bindrcpp_0.2.2    bindr_0.1.1      
+[19] plyr_1.8.4        cellranger_1.1.0  munsell_0.5.0    
+[22] gtable_0.2.0      workflowr_1.0.1   rvest_0.3.2      
+[25] R.methodsS3_1.7.1 psych_1.8.4       evaluate_0.10.1  
+[28] knitr_1.20        parallel_3.4.3    broom_0.4.4      
+[31] Rcpp_0.12.19      backports_1.1.2   scales_1.0.0     
+[34] jsonlite_1.5      mnormt_1.5-5      hms_0.4.2        
+[37] digest_0.6.18     stringi_1.2.2     rprojroot_1.3-2  
+[40] cli_1.0.0         tools_3.4.3       magrittr_1.5     
+[43] lazyeval_0.2.1    crayon_1.3.4      whisker_0.3-2    
+[46] pkgconfig_2.0.2   xml2_1.2.0        lubridate_1.7.4  
+[49] rstudioapi_0.7    assertthat_0.2.0  rmarkdown_1.9    
+[52] httr_1.3.1        R6_2.3.0          nlme_3.1-137     
+[55] git2r_0.21.0      compiler_3.4.3   </code></pre>
+</div>
+</div>
+
+<!-- Adjust MathJax settings so that all math formulae are shown using
+TeX fonts only; see
+http://docs.mathjax.org/en/latest/configuration.html.  This will make
+the presentation more consistent at the cost of the webpage sometimes
+taking slightly longer to load. Note that this only works because the
+footer is added to webpages before the MathJax javascript. -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    "HTML-CSS": { availableFonts: ["TeX"] }
+  });
+</script>
+
+<hr>
+<p>
+  This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a>
+  analysis was created with
+  <a href="https://github.com/jdblischak/workflowr">workflowr</a> 1.0.1
+</p>
+<hr>
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
